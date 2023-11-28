@@ -2,9 +2,14 @@ package com.platform.iperform.service;
 
 import com.platform.iperform.common.dto.EksRequest;
 import com.platform.iperform.common.dto.EksResponse;
+import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.dataaccess.comment.adapter.CommentRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.adapter.EksRepositoryImpl;
+import com.platform.iperform.dataaccess.eks.entity.EksEntity;
+import com.platform.iperform.dataaccess.eks.exception.EksNotFoundException;
+import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.model.Eks;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,22 +20,40 @@ import java.util.UUID;
 @Component
 public class EksService {
     private final EksRepositoryImpl eksRepository;
-    private final CommentRepositoryImpl commentRepository;
+    private final EksDataAccessMapper eksDataAccessMapper;
+    private final FunctionHelper functionHelper;
 
-    public EksService(EksRepositoryImpl eksRepository, CommentRepositoryImpl commentRepository) {
+    public EksService(EksRepositoryImpl eksRepository,
+                      EksDataAccessMapper eksDataAccessMapper, CommentRepositoryImpl commentRepository,
+                      FunctionHelper functionHelper) {
         this.eksRepository = eksRepository;
-        this.commentRepository = commentRepository;
+        this.eksDataAccessMapper = eksDataAccessMapper;
+        this.functionHelper = functionHelper;
     }
     @Transactional
     public EksResponse createEks(List<Eks> eks) {
-        List<Eks> result = eksRepository.save(eks);
+        List<Eks> result = eksRepository.saveAll(eks);
         return EksResponse.builder()
                 .eks(result)
                 .build();
     }
-    public EksResponse updateEks(EksRequest eksRequest) {
-
+    @Transactional
+    public EksResponse updateEks(UUID eId, EksRequest eksRequest) {
+        EksEntity eksEntity = eksRepository.findById(eId)
+                .orElseThrow(() -> new EksNotFoundException("Not Found Eks with id: " + eId));
+        BeanUtils.copyProperties(
+                eksRequest.getEks().get(0),
+                eksEntity,
+                functionHelper.getNullPropertyNames(eksRequest.getEks().get(0))
+        );
+        EksEntity result = eksRepository.save(eksEntity);
+        return EksResponse.builder()
+                .eks(List.of(eksDataAccessMapper.eksEntityToEks(result)))
+                .build();
     }
+
+
+
     @Transactional(readOnly = true)
     public EksResponse getEksByUserId(UUID userId, String timePeriod) {
         Optional<List<Eks>> result = eksRepository.getEksByUserIdAndFilters(userId, timePeriod);

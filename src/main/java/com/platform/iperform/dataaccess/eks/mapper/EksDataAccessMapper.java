@@ -42,6 +42,8 @@ public class EksDataAccessMapper {
                 .status(eks.getStatus())
                 .timePeriod(eks.getTimePeriod())
                 .userId(eks.getUserId())
+                .commentEntities(commentsToCommentEntities(eks.getComments()))
+                .keyStepEntities(keyStepsToKeyStepEntities(eks.getKeySteps()))
                 .build();
         if(eks.getId() == null) {
             eksEntity.setId(UUID.randomUUID());
@@ -78,25 +80,35 @@ public class EksDataAccessMapper {
                 .build();
     }
     public List<KeyStepEntity> keyStepsToKeyStepEntities(List<KeyStep> keySteps) {
-        return keySteps.stream().map(keyStep -> KeyStepEntity.builder()
-                .id(keyStep.getId())
-                .ordinalNumber(keyStep.getOrdinalNumber())
-                .status(keyStep.getStatus())
-                .lastUpdateAt(keyStep.getLastUpdateAt())
-                .createdAt(keyStep.getCreatedAt())
-                .content(keyStep.getContent())
-                .build()).toList();
+        if(keySteps == null) return List.of();
+        return keySteps.stream().map(keyStep -> {
+            KeyStepEntity keyStepEntity = KeyStepEntity.builder()
+                    .ordinalNumber(keyStep.getOrdinalNumber())
+                    .status(keyStep.getStatus())
+                    .lastUpdateAt(keyStep.getLastUpdateAt())
+                    .createdAt(keyStep.getCreatedAt())
+                    .content(keyStep.getContent())
+                    .build();
+            if(keyStep.getId() == null) keyStepEntity.setId(UUID.randomUUID());
+            else keyStepEntity.setId(keyStep.getId());
+            return keyStepEntity;
+        }).toList();
     }
 
     public List<CommentEntity> commentsToCommentEntities(List<Comment> comments) {
-        return comments.stream().map(comment -> CommentEntity.builder()
-                .type(comment.getType())
-                .userId(comment.getUserId())
-                .id(comment.getId())
-                .content(comment.getContent())
-                .lastUpdateAt(comment.getLastUpdateAt())
-                .createdAt(comment.getCreatedAt())
-                .build()).toList();
+        if(comments == null) return List.of();
+        return comments.stream().map(comment -> {
+            CommentEntity commentEntity = CommentEntity.builder()
+                    .type(comment.getType())
+                    .userId(comment.getUserId())
+                    .content(comment.getContent())
+                    .lastUpdateAt(comment.getLastUpdateAt())
+                    .createdAt(comment.getCreatedAt())
+                    .build();
+            if(comment.getId() == null) commentEntity.setId(UUID.randomUUID());
+            else commentEntity.setId(comment.getId());
+            return commentEntity;
+        }).toList();
     }
 
     public List<KeyStep> keyStepEntitiesToKeySteps(List<KeyStepEntity> keyStepEntities) {
@@ -123,4 +135,5 @@ public class EksDataAccessMapper {
                 .id(commentEntity.getId())
                 .build()).toList();
     }
+
 }

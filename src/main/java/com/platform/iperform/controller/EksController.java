@@ -27,11 +27,13 @@ public class EksController {
     }
     @PostMapping(value = "/create")
     public ResponseEntity<EksResponse> createEks(@RequestBody EksRequest eksRequest) {
+
         EksResponse result = eksService.createEks(eksRequest.getEks());
         return ResponseEntity.ok(result);
     }
-    @GetMapping
-    public ResponseEntity<String> testApi1() {
-        return ResponseEntity.ok("ok");
+    @PostMapping(value = "/update")
+    public ResponseEntity<EksResponse> updateEks(@RequestBody EksRequest eksRequest) {
+        EksResponse result = eksService.updateEks(eksRequest);
+        return ResponseEntity.ok(result);
     }
 }

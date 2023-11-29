@@ -22,6 +22,7 @@ public class Comment {
     private CommentType type;
     private String content;
     private ZonedDateTime lastUpdateAt;
+    private UUID questionId;
 
     @Override
     public boolean equals(Object o) {

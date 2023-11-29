@@ -1,11 +1,16 @@
 package com.platform.iperform.dataaccess.eks.mapper;
 
+import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
+import com.platform.iperform.dataaccess.comment.mapper.QuestionDataMapper;
+import com.platform.iperform.dataaccess.eks.entity.CheckInEntity;
 import com.platform.iperform.dataaccess.eks.entity.EksEntity;
 import com.platform.iperform.dataaccess.eks.entity.KeyStepEntity;
+import com.platform.iperform.model.CheckIn;
 import com.platform.iperform.model.Comment;
 import com.platform.iperform.model.Eks;
 import com.platform.iperform.model.KeyStep;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
@@ -14,7 +19,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class EksDataAccessMapper {
+    private final QuestionDataMapper questionDataMapper;
+    private final FunctionHelper functionHelper;
+    public EksDataAccessMapper(QuestionDataMapper questionDataMapper, FunctionHelper functionHelper) {
+        this.questionDataMapper = questionDataMapper;
+        this.functionHelper = functionHelper;
+    }
+
     public Eks eksEntityToEks(EksEntity eksEntity) {
         return Eks.builder()
                 .id(eksEntity.getId())
@@ -29,8 +42,23 @@ public class EksDataAccessMapper {
                 .timePeriod(eksEntity.getTimePeriod())
                 .keySteps(keyStepEntitiesToKeySteps(eksEntity.getKeyStepEntities()))
                 .status(eksEntity.getStatus())
+                .checkIns(checkInEntitiesToCheckIn(eksEntity.getCheckInEntities()))
                 .build();
 
+    }
+
+    public List<CheckIn> checkInEntitiesToCheckIn(List<CheckInEntity> checkInEntities) {
+        if(checkInEntities == null) return List.of();
+        return checkInEntities.stream().map(item -> CheckIn.builder()
+                .id(item.getId())
+                .type(item.getType())
+                .status(item.getStatus())
+                .eId(item.getEks().getId())
+                .content(item.getContent())
+                .createdAt(item.getCreatedAt())
+                .lastUpdateAt(item.getLastUpdateAt())
+                .comments(commentEntitiesToComments(item.getCommentEntities()))
+                .build()).toList();
     }
 
     public EksEntity eksToEksEntity(Eks eks) {
@@ -42,9 +70,11 @@ public class EksDataAccessMapper {
                 .status(eks.getStatus())
                 .timePeriod(eks.getTimePeriod())
                 .userId(eks.getUserId())
-                .commentEntities(commentsToCommentEntities(eks.getComments()))
                 .keyStepEntities(keyStepsToKeyStepEntities(eks.getKeySteps()))
                 .build();
+        eksEntity.getKeyStepEntities().forEach(item -> {
+            item.setEks(eksEntity);
+        });
         if(eks.getId() == null) {
             eksEntity.setId(UUID.randomUUID());
             eksEntity.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
@@ -66,6 +96,7 @@ public class EksDataAccessMapper {
                 .createdAt(commentEntity.getCreatedAt())
                 .parentId(commentEntity.getParent().getId())
                 .id(commentEntity.getId())
+                .questionId(commentEntity.getQuestion().getId())
                 .build();
     }
 
@@ -85,11 +116,15 @@ public class EksDataAccessMapper {
             KeyStepEntity keyStepEntity = KeyStepEntity.builder()
                     .ordinalNumber(keyStep.getOrdinalNumber())
                     .status(keyStep.getStatus())
-                    .lastUpdateAt(keyStep.getLastUpdateAt())
-                    .createdAt(keyStep.getCreatedAt())
+                    .lastUpdateAt(functionHelper.getZoneDateTime(keyStep.getLastUpdateAt()))
+                    .createdAt(functionHelper.getZoneDateTime(keyStep.getCreatedAt()))
                     .content(keyStep.getContent())
+                    .eks(new EksEntity(keyStep.getEId()))
                     .build();
-            if(keyStep.getId() == null) keyStepEntity.setId(UUID.randomUUID());
+            if(keyStep.getId() == null) {
+                keyStepEntity.setId(UUID.randomUUID());
+                log.info("KEY STEP ID: " + keyStepEntity.getId() + ", eId: " + keyStep.getEId());
+            }
             else keyStepEntity.setId(keyStep.getId());
             return keyStepEntity;
         }).toList();
@@ -113,7 +148,9 @@ public class EksDataAccessMapper {
 
     public List<KeyStep> keyStepEntitiesToKeySteps(List<KeyStepEntity> keyStepEntities) {
         if(keyStepEntities == null) return List.of();
+        log.info(keyStepEntities.get(0).toString());
         return keyStepEntities.stream().map(keyStepEntity -> KeyStep.builder()
+                .id(keyStepEntity.getId())
                 .lastUpdateAt(keyStepEntity.getLastUpdateAt())
                 .status(keyStepEntity.getStatus())
                 .content(keyStepEntity.getContent())
@@ -134,6 +171,22 @@ public class EksDataAccessMapper {
                 .parentId(commentEntity.getParent().getId())
                 .id(commentEntity.getId())
                 .build()).toList();
+    }
+
+    public CheckInEntity checkInToCheckInEntity(CheckIn checkIn) {
+        CheckInEntity checkInEntity = CheckInEntity.builder()
+                .status(checkIn.getStatus())
+                .type(checkIn.getType())
+                .lastUpdateAt(checkIn.getLastUpdateAt())
+                .createdAt(checkIn.getCreatedAt())
+                .content(checkIn.getContent())
+                .build();
+        if(checkInEntity.getId() == null) {
+            checkInEntity.setId(UUID.randomUUID());
+        } else {
+            checkInEntity.setId(checkIn.getId());
+        }
+        return checkInEntity;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.platform.iperform.dataaccess.comment.adapter;
 
 import com.platform.iperform.common.exception.CommentNotFoundException;
+import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
 import com.platform.iperform.dataaccess.comment.repository.CommentJpaRepository;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.model.Comment;
@@ -32,5 +33,8 @@ public class CommentRepositoryImpl {
         return eksDataAccessMapper.commentEntityToComment(
                 commentJpaRepository.save(eksDataAccessMapper.commentToCommentEntity(comment))
         );
+    }
+    public Optional<CommentEntity> findById(UUID id) {
+        return commentJpaRepository.findById(id);
     }
 }

@@ -35,5 +35,11 @@ public class EksEntity extends BaseEntityAllowComment {
     private List<KeyStepEntity> keyStepEntities;
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<CommentEntity> commentEntities;
+    @OneToMany(mappedBy = "eks", cascade = CascadeType.ALL)
+    private List<CheckInEntity> checkInEntities;
+
+    public EksEntity(UUID id) {
+        super.setId(id);
+    }
 
 }

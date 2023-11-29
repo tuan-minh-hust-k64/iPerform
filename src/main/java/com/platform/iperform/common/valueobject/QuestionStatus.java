@@ -1,5 +1,5 @@
 package com.platform.iperform.common.valueobject;
 
-public enum CommentType {
-    COMMENT, FEEDBACK
+public enum QuestionStatus {
+    DISABLE, ENABLE
 }

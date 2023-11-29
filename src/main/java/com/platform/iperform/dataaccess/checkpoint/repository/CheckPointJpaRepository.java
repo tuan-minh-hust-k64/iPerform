@@ -11,5 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface CheckPointJpaRepository extends JpaRepository<CheckPointEntity, UUID> {
-    List<CheckPointEntity> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
+    List<CheckPointEntity> findByUserIdOrderByCreatedAtDesc(UUID userId);
 }

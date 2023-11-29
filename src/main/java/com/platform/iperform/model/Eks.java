@@ -26,6 +26,7 @@ public class Eks {
 
     private final List<KeyStep> keySteps;
     private final List<Comment> comments;
+    private final List<CheckIn> checkIns;
 
     @Override
     public String toString() {

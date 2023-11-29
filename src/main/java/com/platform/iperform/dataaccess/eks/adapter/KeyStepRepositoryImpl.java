@@ -4,6 +4,7 @@ import com.platform.iperform.dataaccess.eks.entity.KeyStepEntity;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.dataaccess.eks.repository.KeyStepJpaRepository;
 import com.platform.iperform.model.KeyStep;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class KeyStepRepositoryImpl {
     private final KeyStepJpaRepository keyStepJpaRepository;
     private final EksDataAccessMapper eksDataAccessMapper;

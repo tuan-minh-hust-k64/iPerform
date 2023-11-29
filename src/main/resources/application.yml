@@ -5,14 +5,14 @@ spring:
   jpa:
     open-in-view: false
     show-sql: false
-    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL9Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=iperform&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
     username: postgres
-    password: minh00714124869
+    password: 1412
     driver-class-name: org.postgresql.Driver
     platform: postgres
     schema: classpath:schema.sql

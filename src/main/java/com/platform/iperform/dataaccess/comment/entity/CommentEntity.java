@@ -25,6 +25,9 @@ public class CommentEntity {
     @JoinColumn(name = "parent_id")
     @ManyToOne(cascade = CascadeType.ALL)
     private BaseEntityAllowComment parent;
+    @JoinColumn(name = "question_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    private QuestionEntity question;
     private ZonedDateTime createdAt;
     @Enumerated(EnumType.STRING)
     private CommentType type;

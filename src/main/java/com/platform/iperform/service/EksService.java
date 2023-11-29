@@ -13,6 +13,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,9 +40,10 @@ public class EksService {
                 .build();
     }
     @Transactional
-    public EksResponse updateEks(UUID eId, EksRequest eksRequest) {
-        EksEntity eksEntity = eksRepository.findById(eId)
-                .orElseThrow(() -> new EksNotFoundException("Not Found Eks with id: " + eId));
+    public EksResponse updateEks(EksRequest eksRequest) {
+        EksEntity eksEntity = eksRepository.findById(eksRequest.getEks().get(0).getId())
+                .orElseThrow(() -> new EksNotFoundException("Not Found Eks with id: " + eksRequest.getEks().get(0).getId()));
+        eksEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
                 eksRequest.getEks().get(0),
                 eksEntity,

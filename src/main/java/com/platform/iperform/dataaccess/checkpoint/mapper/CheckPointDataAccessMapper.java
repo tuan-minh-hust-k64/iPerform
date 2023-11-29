@@ -30,8 +30,8 @@ public class CheckPointDataAccessMapper {
                 .build();
     }
     public CheckPointEntity checkPointToCheckPointEntity(CheckPoint checkPoint) {
-        return CheckPointEntity.builder()
-                .checkPointItemEntities(checkPointItemToCheckPointItemEntities(checkPoint.getCheckPointItems()))
+        CheckPointEntity checkPointEntity = CheckPointEntity.builder()
+                .checkPointItemEntities(checkPointItemsToCheckPointItemEntities(checkPoint.getCheckPointItems()))
                 .title(checkPoint.getTitle())
                 .userId(checkPoint.getUserId())
                 .commentEntities(eksDataAccessMapper.commentsToCommentEntities(checkPoint.getComments()))
@@ -39,9 +39,14 @@ public class CheckPointDataAccessMapper {
                 .createdAt(checkPoint.getCreatedAt())
                 .status(checkPoint.getStatus())
                 .build();
+        checkPointEntity.getCheckPointItemEntities().forEach(item -> {
+            item.setCheckPoint(checkPointEntity);
+        });
+        return checkPointEntity;
     }
 
-    private List<CheckPointItemEntity> checkPointItemToCheckPointItemEntities(List<CheckPointItem> checkPointItems) {
+    public List<CheckPointItemEntity> checkPointItemsToCheckPointItemEntities(List<CheckPointItem> checkPointItems) {
+        if(checkPointItems == null) return List.of();
         return checkPointItems.stream().map(checkPointItem -> CheckPointItemEntity.builder()
                 .commentEntities(eksDataAccessMapper.commentsToCommentEntities(checkPointItem.getComments()))
                 .title(checkPointItem.getTitle())
@@ -52,6 +57,7 @@ public class CheckPointDataAccessMapper {
     }
 
     public List<CheckPointItem> checkPointItemEntitiesToCheckPointItems(List<CheckPointItemEntity> checkPointItemEntities) {
+        if(checkPointItemEntities == null) return List.of();
         return checkPointItemEntities.stream().map(checkPointItemEntity -> CheckPointItem.builder()
                 .checkPointId(checkPointItemEntity.getCheckPoint().getId())
                 .title(checkPointItemEntity.getTitle())
@@ -61,4 +67,5 @@ public class CheckPointDataAccessMapper {
                 .content(checkPointItemEntity.getContent())
                 .build()).toList();
     }
+
 }

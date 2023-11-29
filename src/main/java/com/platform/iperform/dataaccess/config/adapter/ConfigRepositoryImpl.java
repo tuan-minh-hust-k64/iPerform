@@ -1,12 +1,14 @@
 package com.platform.iperform.dataaccess.config.adapter;
 
 import com.platform.iperform.common.exception.ConfigNotFoundException;
+import com.platform.iperform.dataaccess.config.entity.ConfigEntity;
 import com.platform.iperform.dataaccess.config.mapper.ConfigDataAccessMapper;
 import com.platform.iperform.dataaccess.config.repository.ConfigJpaRepository;
 import com.platform.iperform.model.Config;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class ConfigRepositoryImpl {
@@ -27,5 +29,8 @@ public class ConfigRepositoryImpl {
         return configDataAccessMapper.configEntityToConfig(
                 configJpaRepository.save(configDataAccessMapper.configToConfigEntity(config))
         );
+    }
+    public Optional<ConfigEntity> findById(UUID id) {
+        return configJpaRepository.findById(id);
     }
 }

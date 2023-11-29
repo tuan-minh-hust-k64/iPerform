@@ -17,7 +17,7 @@ import java.util.UUID;
 public class KeyStepEntity {
     @Id
     private UUID id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "e_id")
     private EksEntity eks;
     private ZonedDateTime createdAt;
@@ -26,4 +26,16 @@ public class KeyStepEntity {
     private EksStatus status;
     private ZonedDateTime lastUpdateAt;
     private int ordinalNumber;
+
+    @Override
+    public String toString() {
+        return "KeyStepEntity{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", content='" + content + '\'' +
+                ", status=" + status +
+                ", lastUpdateAt=" + lastUpdateAt +
+                ", ordinalNumber=" + ordinalNumber +
+                '}';
+    }
 }

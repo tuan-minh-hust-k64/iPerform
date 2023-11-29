@@ -5,6 +5,7 @@ import com.platform.iperform.common.dto.CheckPointResponse;
 import com.platform.iperform.common.dto.EksRequest;
 import com.platform.iperform.common.dto.EksResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.dataaccess.checkpoint.adapter.CheckPointRepositoryImpl;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
 import com.platform.iperform.dataaccess.checkpoint.mapper.CheckPointDataAccessMapper;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +42,7 @@ public class CheckPointService {
     }
     @Transactional
     public CheckPointResponse createCheckPoint(CheckPointRequest checkPointRequest) {
+        checkPointRequest.getCheckPoint().setStatus(CheckPointStatus.INIT);
         CheckPoint result = checkPointRepository.save(checkPointRequest.getCheckPoint());
         return CheckPointResponse.builder()
                 .checkPoint(List.of(result))
@@ -48,6 +52,7 @@ public class CheckPointService {
     public CheckPointResponse updateCheckPoint(CheckPointRequest checkPointRequest) {
         CheckPointEntity checkPointEntity = checkPointRepository.findById(checkPointRequest.getCheckPoint().getId())
                 .orElseThrow(() -> new EksNotFoundException("Not Found CheckPoint with id: " + checkPointRequest.getCheckPoint().getId()));
+        checkPointEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
                 checkPointRequest.getCheckPoint(),
                 checkPointEntity,

@@ -11,6 +11,8 @@ import com.platform.iperform.model.Question;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
@@ -24,7 +26,7 @@ public class QuestionService {
         this.questionDataMapper = questionDataMapper;
         this.functionHelper = functionHelper;
     }
-    public QuestionResponse saveAll(QuestionRequest questionRequest) {
+    public QuestionResponse createQuestion(QuestionRequest questionRequest) {
         List<Question> result = questionRepository.saveAll(questionRequest.getQuestions());
         return QuestionResponse.builder()
                 .questions(result)
@@ -33,6 +35,7 @@ public class QuestionService {
     public QuestionResponse updateQuestion(QuestionRequest questionRequest) {
         QuestionEntity questionEntity = questionRepository.findById(questionRequest.getQuestions().get(0).getId())
                 .orElseThrow(() -> new QuestionNotFoundException("Not found question with id: " + questionRequest.getQuestions().get(0).getId()));
+        questionEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
                 questionRequest.getQuestions().get(0),
                 questionEntity,

@@ -8,6 +8,7 @@ DROP TYPE IF EXISTS comment_status;
 DROP TYPE IF EXISTS comment_type;
 DROP TYPE IF EXISTS check_in_status;
 DROP TYPE IF EXISTS question_status;
+DROP TYPE IF EXISTS check_point_status
 
 
 CREATE TYPE expectation_type as ENUM ('IKAME_WHAT', 'IKAME_HOW', 'IKAME_LEVELUP');
@@ -16,6 +17,7 @@ CREATE TYPE comment_status as ENUM ('DELETED', 'INIT');
 CREATE TYPE comment_type as ENUM ('COMMENT', 'FEEDBACK');
 CREATE TYPE check_in_status as ENUM ('PENDING', 'COMPLETED');
 CREATE TYPE question_status as ENUM ('DISABLE', 'ENABLE');
+CREATE TYPE check_point_status as ENUM ('INIT', 'COMPLETED');
 
 DROP TABLE IF EXISTS "iperform".key_step CASCADE;
 DROP TABLE IF EXISTS "iperform".expectation CASCADE;
@@ -63,7 +65,7 @@ CREATE TABLE "iperform".check_point
     title character varying COLLATE pg_catalog."default" NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     last_update_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    status character varying COLLATE pg_catalog."default" NOT NULL,
+    status check_point_status NOT NULL,
     CONSTRAINT check_point_key PRIMARY KEY (id)
 );
 

@@ -12,6 +12,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,9 +36,10 @@ public class CheckInService {
                 .build();
     }
     @Transactional
-    public CheckInResponse updateKeyStep(CheckInRequest checkInRequest) {
+    public CheckInResponse updateCheckIn(CheckInRequest checkInRequest) {
         CheckInEntity checkInEntity = checkInRepository.findById(checkInRequest.getId())
                 .orElseThrow(() -> new CheckInNotFoundException("Not Found CheckIn with id: " + checkInRequest.getId()));
+        checkInEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
                 checkInRequest.getCheckIns().get(0),
                 checkInEntity,

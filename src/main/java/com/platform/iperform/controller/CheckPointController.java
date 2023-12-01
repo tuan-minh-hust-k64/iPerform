@@ -7,9 +7,9 @@ import com.platform.iperform.common.dto.KeyStepResponse;
 import com.platform.iperform.service.CheckPointService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/check-point")
@@ -19,18 +19,20 @@ public class CheckPointController {
     public CheckPointController(CheckPointService checkPointService) {
         this.checkPointService = checkPointService;
     }
-    @PostMapping(value = "/get-by-user-id")
-    public ResponseEntity<CheckPointResponse> getCheckPointByUserId(@RequestBody CheckPointRequest checkPointRequest) {
-        CheckPointResponse result = checkPointService.getCheckPointByUserId(checkPointRequest);
+    @GetMapping
+    public ResponseEntity<CheckPointResponse> getCheckPointByUserId(@RequestParam UUID userId) {
+        CheckPointResponse result = checkPointService.getCheckPointByUserId(CheckPointRequest.builder()
+                        .userId(userId)
+                .build());
         return ResponseEntity.ok(result);
     }
-    @PostMapping(value = "/create")
+    @PostMapping
     public ResponseEntity<CheckPointResponse> createCheckPoint(@RequestBody CheckPointRequest checkPointRequest) {
         CheckPointResponse result = checkPointService.createCheckPoint(checkPointRequest);
         return ResponseEntity.ok(result);
     }
-    @PostMapping(value = "/update")
-    public ResponseEntity<CheckPointResponse> updateEks(@RequestBody CheckPointRequest checkPointRequest) {
+    @PutMapping
+    public ResponseEntity<CheckPointResponse> updateCheckPoint(@RequestBody CheckPointRequest checkPointRequest) {
         CheckPointResponse result = checkPointService.updateCheckPoint(checkPointRequest);
         return ResponseEntity.ok(result);
     }

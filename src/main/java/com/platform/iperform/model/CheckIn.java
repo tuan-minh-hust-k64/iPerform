@@ -24,4 +24,16 @@ public class CheckIn {
     private ZonedDateTime lastUpdateAt;
 
     private final List<Comment> comments;
+
+    @Override
+    public String toString() {
+        return "CheckIn{" +
+                "id=" + id +
+                ", eId=" + eId +
+                ", createdAt=" + createdAt +
+                ", content='" + content + '\'' +
+                ", status=" + status +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

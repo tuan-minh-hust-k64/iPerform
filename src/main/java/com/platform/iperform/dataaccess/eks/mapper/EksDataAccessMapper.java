@@ -1,7 +1,10 @@
 package com.platform.iperform.dataaccess.eks.mapper;
 
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.BaseEntityAllowComment;
+import com.platform.iperform.common.valueobject.CommentStatus;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
+import com.platform.iperform.dataaccess.comment.entity.QuestionEntity;
 import com.platform.iperform.dataaccess.comment.mapper.QuestionDataMapper;
 import com.platform.iperform.dataaccess.eks.entity.CheckInEntity;
 import com.platform.iperform.dataaccess.eks.entity.EksEntity;
@@ -32,7 +35,7 @@ public class EksDataAccessMapper {
         return Eks.builder()
                 .id(eksEntity.getId())
                 .content(eksEntity.getContent())
-                .comments(commentEntitiesToComments(eksEntity.getCommentEntities()))
+//                .comments(commentEntitiesToComments(eksEntity.getCommentEntities()))
                 .createdAt(eksEntity.getCreatedAt())
                 .type(eksEntity.getType())
                 .lastUpdateAt(eksEntity.getLastUpdateAt())
@@ -57,7 +60,7 @@ public class EksDataAccessMapper {
                 .content(item.getContent())
                 .createdAt(item.getCreatedAt())
                 .lastUpdateAt(item.getLastUpdateAt())
-                .comments(commentEntitiesToComments(item.getCommentEntities()))
+//                .comments(commentEntitiesToComments(item.getCommentEntities()))
                 .build()).toList();
     }
 
@@ -94,21 +97,36 @@ public class EksDataAccessMapper {
                 .userId(commentEntity.getUserId())
                 .lastUpdateAt(commentEntity.getLastUpdateAt())
                 .createdAt(commentEntity.getCreatedAt())
-                .parentId(commentEntity.getParent().getId())
+                .parentId(commentEntity.getParentId())
                 .id(commentEntity.getId())
-                .questionId(commentEntity.getQuestion().getId())
+                .status(commentEntity.getStatus())
+                .questionId(commentEntity.getQuestion() == null? null:commentEntity.getQuestion().getId())
                 .build();
     }
 
     public CommentEntity commentToCommentEntity(Comment comment) {
-        return CommentEntity.builder()
+        CommentEntity commentEntity = CommentEntity.builder()
+                .status(comment.getStatus())
                 .type(comment.getType())
                 .userId(comment.getUserId())
                 .id(comment.getId())
                 .content(comment.getContent())
                 .lastUpdateAt(comment.getLastUpdateAt())
                 .createdAt(comment.getCreatedAt())
+                .parentId(comment.getParentId())
                 .build();
+        if(comment.getQuestionId() != null) {
+            commentEntity.setQuestion(new QuestionEntity(comment.getQuestionId()));
+        }
+        if(comment.getId() == null) {
+            commentEntity.setId(UUID.randomUUID());
+            commentEntity.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
+            commentEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
+            commentEntity.setStatus(CommentStatus.INIT);
+        } else {
+            commentEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
+        }
+        return commentEntity;
     }
     public List<KeyStepEntity> keyStepsToKeyStepEntities(List<KeyStep> keySteps) {
         if(keySteps == null) return List.of();
@@ -148,7 +166,6 @@ public class EksDataAccessMapper {
 
     public List<KeyStep> keyStepEntitiesToKeySteps(List<KeyStepEntity> keyStepEntities) {
         if(keyStepEntities == null) return List.of();
-        log.info(keyStepEntities.get(0).toString());
         return keyStepEntities.stream().map(keyStepEntity -> KeyStep.builder()
                 .id(keyStepEntity.getId())
                 .lastUpdateAt(keyStepEntity.getLastUpdateAt())
@@ -168,13 +185,16 @@ public class EksDataAccessMapper {
                 .userId(commentEntity.getUserId())
                 .lastUpdateAt(commentEntity.getLastUpdateAt())
                 .createdAt(commentEntity.getCreatedAt())
-                .parentId(commentEntity.getParent().getId())
+                .parentId(commentEntity.getParentId())
                 .id(commentEntity.getId())
+                .status(commentEntity.getStatus())
+                .questionId(commentEntity.getQuestion() == null? null:commentEntity.getQuestion().getId())
                 .build()).toList();
     }
 
     public CheckInEntity checkInToCheckInEntity(CheckIn checkIn) {
         CheckInEntity checkInEntity = CheckInEntity.builder()
+                .eks(new EksEntity(checkIn.getEId()))
                 .status(checkIn.getStatus())
                 .type(checkIn.getType())
                 .lastUpdateAt(checkIn.getLastUpdateAt())
@@ -183,8 +203,11 @@ public class EksDataAccessMapper {
                 .build();
         if(checkInEntity.getId() == null) {
             checkInEntity.setId(UUID.randomUUID());
+            checkInEntity.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
+            checkInEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         } else {
             checkInEntity.setId(checkIn.getId());
+            checkInEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         }
         return checkInEntity;
     }

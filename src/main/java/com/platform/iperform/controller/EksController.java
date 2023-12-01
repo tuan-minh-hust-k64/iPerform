@@ -20,18 +20,18 @@ public class EksController {
         this.eksService = eksService;
     }
 
-    @PostMapping
-    public ResponseEntity<EksResponse> getEksByUserId(@RequestBody EksRequest eksRequest) {
-        EksResponse result = eksService.getEksByUserId(eksRequest.getUserId(), eksRequest.getTimePeriod());
+    @GetMapping
+    public ResponseEntity<EksResponse> getEksByUserId(@RequestParam UUID userId, @RequestParam String timePeriod) {
+        EksResponse result = eksService.getEksByUserId(userId, timePeriod);
         return ResponseEntity.ok(result);
     }
-    @PostMapping(value = "/create")
+    @PostMapping
     public ResponseEntity<EksResponse> createEks(@RequestBody EksRequest eksRequest) {
 
         EksResponse result = eksService.createEks(eksRequest.getEks());
         return ResponseEntity.ok(result);
     }
-    @PostMapping(value = "/update")
+    @PutMapping
     public ResponseEntity<EksResponse> updateEks(@RequestBody EksRequest eksRequest) {
         EksResponse result = eksService.updateEks(eksRequest);
         return ResponseEntity.ok(result);

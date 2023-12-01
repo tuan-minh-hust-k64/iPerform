@@ -27,11 +27,9 @@ public class CheckPointRepositoryImpl {
         ).stream().map(checkPointDataAccessMapper::checkPointEntityToCheckPoint).toList();
     }
 
-    public CheckPoint save(CheckPoint checkPoint) {
-        return checkPointDataAccessMapper.checkPointEntityToCheckPoint(
-                checkPointJpaRepository.save(
-                        checkPointDataAccessMapper.checkPointToCheckPointEntity(checkPoint)
-                )
+    public CheckPointEntity save(CheckPointEntity checkPointEntity) {
+        return checkPointJpaRepository.save(
+                       checkPointEntity
         );
     }
 

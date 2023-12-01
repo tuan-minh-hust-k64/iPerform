@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "check_in")
 public class CheckInEntity extends BaseEntityAllowComment {
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "e_id")
     private EksEntity eks;
     private ZonedDateTime createdAt;
@@ -28,6 +28,17 @@ public class CheckInEntity extends BaseEntityAllowComment {
     private String type;
     private ZonedDateTime lastUpdateAt;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<CommentEntity> commentEntities;
+//    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+//    private List<CommentEntity> commentEntities;
+
+    @Override
+    public String toString() {
+        return "CheckInEntity{" +
+                "createdAt=" + createdAt +
+                ", content='" + content + '\'' +
+                ", status=" + status +
+                ", type='" + type + '\'' +
+                ", lastUpdateAt=" + lastUpdateAt +
+                '}';
+    }
 }

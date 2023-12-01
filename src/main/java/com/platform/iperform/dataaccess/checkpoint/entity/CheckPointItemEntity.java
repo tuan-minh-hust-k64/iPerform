@@ -13,9 +13,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "check_point_item")
 public class CheckPointItemEntity extends BaseEntityAllowComment{
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "check_point_id")
     private CheckPointEntity checkPoint;
     private ZonedDateTime createdAt;
@@ -23,6 +25,17 @@ public class CheckPointItemEntity extends BaseEntityAllowComment{
     private String content;
     private ZonedDateTime lastUpdateAt;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<CommentEntity> commentEntities;
+//    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+//    private List<CommentEntity> commentEntities;
+
+    @Override
+    public String toString() {
+        return "CheckPointItemEntity{" +
+                "createdAt=" + createdAt +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", lastUpdateAt=" + lastUpdateAt +
+
+                '}';
+    }
 }

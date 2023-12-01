@@ -4,6 +4,8 @@ import com.platform.iperform.dataaccess.config.entity.ConfigEntity;
 import com.platform.iperform.model.Config;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class ConfigDataAccessMapper {
     public Config configEntityToConfig(ConfigEntity configEntity) {
@@ -19,11 +21,12 @@ public class ConfigDataAccessMapper {
 
     public ConfigEntity configToConfigEntity(Config config) {
         return ConfigEntity.builder()
-                .id(config.getId())
+                .id(config.getId() == null? UUID.randomUUID():config.getId())
                 .guidEks(config.getGuidEks())
                 .guidCheckPoint(config.getGuidCheckPoint())
                 .checkIn(config.isCheckIn())
                 .checkPoint(config.isCheckPoint())
+                .guidCheckIn(config.getGuidCheckIn())
                 .build();
     }
 }

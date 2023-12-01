@@ -39,7 +39,7 @@ public class ConfigService {
     }
     @Transactional
     public ConfigResponse updateConfig(ConfigRequest configRequest) {
-        ConfigEntity configEntity = configRepository.findById(configRequest.getId())
+        ConfigEntity configEntity = configRepository.findById(configRequest.getConfig().getId())
                 .orElseThrow(() -> new ConfigNotfoundException("Not Found Config with id: " + configRequest.getConfig().getId()));
         BeanUtils.copyProperties(
                 configRequest.getConfig(),

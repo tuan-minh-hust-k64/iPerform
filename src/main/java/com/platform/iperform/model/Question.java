@@ -1,10 +1,7 @@
 package com.platform.iperform.model;
 
 import com.platform.iperform.common.valueobject.QuestionStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

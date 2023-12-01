@@ -6,6 +6,7 @@ import com.platform.iperform.service.ConfigService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,12 +18,12 @@ public class ConfigController {
     public ConfigController(ConfigService configService) {
         this.configService = configService;
     }
-    @PostMapping(value = "/create")
+    @PostMapping
     public ResponseEntity<ConfigResponse> createConfig(@RequestBody ConfigRequest configRequest) {
         ConfigResponse result = configService.createConfig(configRequest);
         return ResponseEntity.ok(result);
     }
-    @PostMapping(value = "/update")
+    @PutMapping
     public ResponseEntity<ConfigResponse> updateConfig(@RequestBody ConfigRequest configRequest) {
         ConfigResponse result = configService.updateConfig(configRequest);
         return ResponseEntity.ok(result);

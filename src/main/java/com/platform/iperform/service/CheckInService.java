@@ -37,8 +37,8 @@ public class CheckInService {
     }
     @Transactional
     public CheckInResponse updateCheckIn(CheckInRequest checkInRequest) {
-        CheckInEntity checkInEntity = checkInRepository.findById(checkInRequest.getId())
-                .orElseThrow(() -> new CheckInNotFoundException("Not Found CheckIn with id: " + checkInRequest.getId()));
+        CheckInEntity checkInEntity = checkInRepository.findById(checkInRequest.getCheckIns().get(0).getId())
+                .orElseThrow(() -> new CheckInNotFoundException("Not Found CheckIn with id: " + checkInRequest.getCheckIns().get(0).getId()));
         checkInEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
                 checkInRequest.getCheckIns().get(0),

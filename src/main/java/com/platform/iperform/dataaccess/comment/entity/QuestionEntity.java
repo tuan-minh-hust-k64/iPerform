@@ -19,9 +19,13 @@ public class QuestionEntity {
     @Id
     private UUID id;
     private String content;
+    @Enumerated(EnumType.STRING)
     private QuestionStatus status;
     private ZonedDateTime createdAt;
     private ZonedDateTime lastUpdateAt;
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<CommentEntity> commentEntities;
+    public QuestionEntity(UUID id) {
+        this.id = id;
+    }
 }

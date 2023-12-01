@@ -1,5 +1,6 @@
 package com.platform.iperform.dataaccess.comment.adapter;
 
+import com.platform.iperform.common.valueobject.QuestionStatus;
 import com.platform.iperform.dataaccess.comment.entity.QuestionEntity;
 import com.platform.iperform.dataaccess.comment.mapper.QuestionDataMapper;
 import com.platform.iperform.dataaccess.comment.repository.QuestionJpaRepository;
@@ -32,5 +33,11 @@ public class QuestionRepositoryImpl {
 
     public Optional<QuestionEntity> findById(UUID id) {
         return questionJpaRepository.findById(id);
+    }
+    public List<QuestionEntity> findByStatus(QuestionStatus status) {
+        return questionJpaRepository.findByStatus(status);
+    }
+    public List<QuestionEntity> findAll() {
+        return questionJpaRepository.findAll();
     }
 }

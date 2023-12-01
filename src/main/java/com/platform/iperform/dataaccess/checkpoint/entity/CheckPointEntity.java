@@ -16,17 +16,22 @@ import java.util.UUID;
 @Builder
 @Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "check_point")
 public class CheckPointEntity extends BaseEntityAllowComment{
     private UUID userId;
     private ZonedDateTime createdAt;
     private String title;
+    @Enumerated(EnumType.STRING)
     private CheckPointStatus status;
     private ZonedDateTime lastUpdateAt;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<CommentEntity> commentEntities;
+//    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+//    private List<CommentEntity> commentEntities;
     @OneToMany(mappedBy = "checkPoint", cascade = CascadeType.ALL)
     private List<CheckPointItemEntity> checkPointItemEntities;
-
+    public CheckPointEntity(UUID id) {
+        super.setId(id);
+    }
 }

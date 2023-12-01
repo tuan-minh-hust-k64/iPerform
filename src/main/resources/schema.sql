@@ -8,7 +8,7 @@ DROP TYPE IF EXISTS comment_status;
 DROP TYPE IF EXISTS comment_type;
 DROP TYPE IF EXISTS check_in_status;
 DROP TYPE IF EXISTS question_status;
-DROP TYPE IF EXISTS check_point_status
+DROP TYPE IF EXISTS check_point_status;
 
 
 CREATE TYPE expectation_type as ENUM ('IKAME_WHAT', 'IKAME_HOW', 'IKAME_LEVELUP');
@@ -37,7 +37,7 @@ CREATE TABLE "iperform".expectation
     type expectation_type NOT NULL,
     content character varying COLLATE pg_catalog."default" NOT NULL,
     process numeric(10, 2),
-    status eks_status,
+    status eks_status NOT NULL,
     user_id uuid NOT NULL,
     time_period character varying COLLATE pg_catalog."default",
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -109,6 +109,7 @@ CREATE TABLE "iperform".comment
 );
 CREATE TABLE "iperform".config
 (
+    id uuid NOT NULL,
     check_point boolean NOT NULL,
     check_in boolean NOT NULL,
     guid_check_in character varying COLLATE pg_catalog."default" NOT NULL,
@@ -124,24 +125,24 @@ CREATE TABLE "iperform".question
     status question_status NOT NULL,
     CONSTRAINT feedback_key PRIMARY KEY (id)
 );
-ALTER TABLE "iperform".comment
-    ADD CONSTRAINT "comment_fk_e" FOREIGN KEY (parent_id)
-    REFERENCES "iperform".expectation (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE CASCADE
-    NOT VALID;
-ALTER TABLE "iperform".comment
-    ADD CONSTRAINT "comment_fk_check_point" FOREIGN KEY (parent_id)
-    REFERENCES "iperform".check_point (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE CASCADE
-    NOT VALID;
-ALTER TABLE "iperform".comment
-    ADD CONSTRAINT "comment_fk_check_point_item" FOREIGN KEY (parent_id)
-    REFERENCES "iperform".check_point_item (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE CASCADE
-    NOT VALID;
+--ALTER TABLE "iperform".comment
+--    ADD CONSTRAINT "comment_fk_e" FOREIGN KEY (parent_id)
+--    REFERENCES "iperform".expectation (id) MATCH SIMPLE
+--    ON UPDATE NO ACTION
+--    ON DELETE CASCADE
+--    NOT VALID;
+--ALTER TABLE "iperform".comment
+--    ADD CONSTRAINT "comment_fk_check_point" FOREIGN KEY (parent_id)
+--    REFERENCES "iperform".check_point (id) MATCH SIMPLE
+--    ON UPDATE NO ACTION
+--    ON DELETE CASCADE
+--    NOT VALID;
+--ALTER TABLE "iperform".comment
+--    ADD CONSTRAINT "comment_fk_check_point_item" FOREIGN KEY (parent_id)
+--    REFERENCES "iperform".check_point_item (id) MATCH SIMPLE
+--    ON UPDATE NO ACTION
+--    ON DELETE CASCADE
+--    NOT VALID;
 ALTER TABLE "iperform".comment
     ADD CONSTRAINT "comment_fk_question" FOREIGN KEY (question_id)
     REFERENCES "iperform".question (id) MATCH SIMPLE

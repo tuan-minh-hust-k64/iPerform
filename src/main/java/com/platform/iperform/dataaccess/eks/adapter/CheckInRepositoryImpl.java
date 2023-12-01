@@ -6,6 +6,7 @@ import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.dataaccess.eks.repository.CheckInJpaRepository;
 import com.platform.iperform.model.CheckIn;
 import com.platform.iperform.model.KeyStep;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class CheckInRepositoryImpl {
     private final EksDataAccessMapper eksDataAccessMapper;
     private final CheckInJpaRepository checkInJpaRepository;

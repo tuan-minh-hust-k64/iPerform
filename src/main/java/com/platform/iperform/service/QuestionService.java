@@ -3,6 +3,7 @@ package com.platform.iperform.service;
 import com.platform.iperform.common.dto.QuestionRequest;
 import com.platform.iperform.common.dto.QuestionResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.QuestionStatus;
 import com.platform.iperform.dataaccess.comment.adapter.QuestionRepositoryImpl;
 import com.platform.iperform.dataaccess.comment.entity.QuestionEntity;
 import com.platform.iperform.dataaccess.comment.exception.QuestionNotFoundException;
@@ -46,6 +47,18 @@ public class QuestionService {
         );
         return QuestionResponse.builder()
                 .questions(List.of(result))
+                .build();
+    }
+    public QuestionResponse findByStatus(QuestionRequest questionRequest) {
+        List<QuestionEntity> result = questionRepository.findByStatus(questionRequest.getStatus());
+        return QuestionResponse.builder()
+                .questions(result.stream().map(questionDataMapper::questionEntityToQuestion).toList())
+                .build();
+    }
+    public QuestionResponse findAll() {
+        List<QuestionEntity> result = questionRepository.findAll();
+        return QuestionResponse.builder()
+                .questions(result.stream().map(questionDataMapper::questionEntityToQuestion).toList())
                 .build();
     }
 }

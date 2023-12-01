@@ -1,5 +1,6 @@
 package com.platform.iperform.model;
 
+import com.platform.iperform.common.valueobject.CommentStatus;
 import com.platform.iperform.common.valueobject.CommentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class Comment {
     private String content;
     private ZonedDateTime lastUpdateAt;
     private UUID questionId;
+    private CommentStatus status;
 
     @Override
     public boolean equals(Object o) {

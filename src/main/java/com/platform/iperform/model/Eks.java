@@ -28,6 +28,8 @@ public class Eks {
     private final List<Comment> comments;
     private final List<CheckIn> checkIns;
 
+//    public void initEks()
+
     @Override
     public String toString() {
         return "Eks{" +

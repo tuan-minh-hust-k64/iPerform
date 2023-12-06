@@ -1,14 +1,11 @@
 package com.platform.iperform.controller;
 
-import com.platform.iperform.common.dto.QuestionRequest;
-import com.platform.iperform.common.dto.QuestionResponse;
-import com.platform.iperform.common.valueobject.QuestionStatus;
+import com.platform.iperform.common.dto.request.QuestionRequest;
+import com.platform.iperform.common.dto.response.QuestionResponse;
 import com.platform.iperform.service.QuestionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.beans.PropertyEditorSupport;
 
 @Controller
 @RequestMapping(value = "/question")

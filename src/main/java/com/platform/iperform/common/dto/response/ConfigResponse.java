@@ -1,15 +1,16 @@
-package com.platform.iperform.common.dto;
+package com.platform.iperform.common.dto.response;
 
 import com.platform.iperform.model.Config;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
 
 @Builder
 @Getter
-public class ConfigRequest {
-    private final UUID id;
+@Setter
+public class ConfigResponse {
     private final Config config;
+    private final String message;
 }

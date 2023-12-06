@@ -1,4 +1,4 @@
-package com.platform.iperform.common.dto;
+package com.platform.iperform.common.dto.request;
 
 import com.platform.iperform.common.valueobject.QuestionStatus;
 import com.platform.iperform.model.Question;

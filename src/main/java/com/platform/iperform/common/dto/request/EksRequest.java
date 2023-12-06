@@ -1,19 +1,17 @@
-package com.platform.iperform.common.dto;
+package com.platform.iperform.common.dto.request;
 
 import com.platform.iperform.model.Eks;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
-
-@Getter
-@Setter
 @Builder
 @AllArgsConstructor
-public class EksResponse {
+@Getter
+public class EksRequest {
+    private final UUID userId;
     private final List<Eks> eks;
-    private final String message;
+    private final String timePeriod;
 }

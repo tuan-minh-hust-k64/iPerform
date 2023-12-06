@@ -1,6 +1,6 @@
 package com.platform.iperform.dataaccess.comment.adapter;
 
-import com.platform.iperform.common.exception.CommentNotFoundException;
+import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
 import com.platform.iperform.dataaccess.comment.repository.CommentJpaRepository;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
@@ -25,7 +25,7 @@ public class CommentRepositoryImpl {
         return Optional.of(
                 eksDataAccessMapper.commentEntitiesToComments(
                         commentJpaRepository.findByParentId(parentId)
-                                .orElseThrow(CommentNotFoundException::new)
+                                .orElseThrow(NotFoundException::new)
                 )
         );
     }

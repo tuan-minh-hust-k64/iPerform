@@ -1,7 +1,7 @@
 package com.platform.iperform.dataaccess.eks.adapter;
 
+import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.dataaccess.eks.entity.EksEntity;
-import com.platform.iperform.dataaccess.eks.exception.EksNotFoundException;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.dataaccess.eks.repository.EksJpaRepository;
 import com.platform.iperform.dataaccess.eks.repository.KeyStepJpaRepository;
@@ -26,7 +26,7 @@ public class EksRepositoryImpl {
 
     public Optional<List<Eks>> getEksByUserIdAndFilters(UUID userId, String timePeriod) {
         return Optional.of(eksJpaRepository.findByUserIdAndTimePeriod(userId, timePeriod)
-                .orElseThrow(() -> new EksNotFoundException("Not found eks with userId " + userId + ", timePeriod: " + timePeriod))
+                .orElseThrow(() -> new NotFoundException("Not found eks with userId " + userId + ", timePeriod: " + timePeriod))
                 .stream()
                 .map(eksDataAccessMapper::eksEntityToEks).collect(Collectors.toList()));
     }

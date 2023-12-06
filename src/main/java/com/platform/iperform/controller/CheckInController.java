@@ -1,8 +1,7 @@
 package com.platform.iperform.controller;
 
-import com.platform.iperform.common.dto.CheckInRequest;
-import com.platform.iperform.common.dto.CheckInResponse;
-import com.platform.iperform.common.dto.CheckPointResponse;
+import com.platform.iperform.common.dto.request.CheckInRequest;
+import com.platform.iperform.common.dto.response.CheckInResponse;
 import com.platform.iperform.service.CheckInService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

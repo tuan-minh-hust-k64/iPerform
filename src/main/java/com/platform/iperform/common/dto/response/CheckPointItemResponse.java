@@ -1,4 +1,4 @@
-package com.platform.iperform.common.dto;
+package com.platform.iperform.common.dto.response;
 
 import com.platform.iperform.model.CheckPointItem;
 import lombok.Builder;

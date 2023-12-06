@@ -1,7 +1,7 @@
 package com.platform.iperform.controller;
 
-import com.platform.iperform.common.dto.ConfigRequest;
-import com.platform.iperform.common.dto.ConfigResponse;
+import com.platform.iperform.common.dto.request.ConfigRequest;
+import com.platform.iperform.common.dto.response.ConfigResponse;
 import com.platform.iperform.service.ConfigService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

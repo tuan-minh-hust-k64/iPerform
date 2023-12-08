@@ -12,6 +12,9 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/comment")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
+
 public class CommentController {
     private final CommentService commentService;
 

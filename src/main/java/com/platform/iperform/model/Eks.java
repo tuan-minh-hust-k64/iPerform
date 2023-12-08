@@ -23,6 +23,7 @@ public class Eks {
     private String timePeriod;
     private ZonedDateTime lastUpdateAt;
     private int ordinalNumber;
+    private String description;
 
     private final List<KeyStep> keySteps;
     private final List<Comment> comments;

@@ -24,6 +24,7 @@ public class EksEntity extends BaseEntityAllowComment {
     @Enumerated(EnumType.STRING)
     private EksType type;
     private String content;
+    private String description;
     private int process;
     @Enumerated(EnumType.STRING)
     private EksStatus status;

@@ -15,5 +15,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EksResponse {
     private final List<Eks> eks;
+    private final Eks data;
     private final String message;
 }

@@ -37,6 +37,7 @@ CREATE TABLE "iperform".expectation
     type expectation_type NOT NULL,
     content character varying COLLATE pg_catalog."default" NOT NULL,
     process numeric(10, 2),
+    description character varying COLLATE pg_catalog."default" NOT NULL,
     status eks_status NOT NULL,
     user_id uuid NOT NULL,
     time_period character varying COLLATE pg_catalog."default",

@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class CheckPointService {
@@ -67,4 +69,10 @@ public class CheckPointService {
                 .checkPoint(List.of(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result)))
                 .build();
     }
+
+//    @Transactional(readOnly = true)
+//    public CheckPointResponse findById(UUID id) {
+//        CheckPointEntity result = checkPointRepository.findById(id)
+//                .orElseThrow(() -> new );
+//    }
 }

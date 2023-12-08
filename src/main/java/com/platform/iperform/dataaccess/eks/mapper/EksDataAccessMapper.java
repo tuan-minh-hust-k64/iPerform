@@ -35,6 +35,7 @@ public class EksDataAccessMapper {
         return Eks.builder()
                 .id(eksEntity.getId())
                 .content(eksEntity.getContent())
+                .description(eksEntity.getDescription())
 //                .comments(commentEntitiesToComments(eksEntity.getCommentEntities()))
                 .createdAt(eksEntity.getCreatedAt())
                 .type(eksEntity.getType())
@@ -67,6 +68,7 @@ public class EksDataAccessMapper {
     public EksEntity eksToEksEntity(Eks eks) {
         EksEntity eksEntity = EksEntity.builder()
                 .content(eks.getContent())
+                .description(eks.getDescription())
                 .ordinalNumber(eks.getOrdinalNumber())
                 .type(eks.getType())
                 .process(eks.getProcess())
@@ -137,11 +139,11 @@ public class EksDataAccessMapper {
                     .lastUpdateAt(functionHelper.getZoneDateTime(keyStep.getLastUpdateAt()))
                     .createdAt(functionHelper.getZoneDateTime(keyStep.getCreatedAt()))
                     .content(keyStep.getContent())
-                    .eks(new EksEntity(keyStep.getEId()))
+                    .eks(new EksEntity(keyStep.getEksId()))
                     .build();
             if(keyStep.getId() == null) {
                 keyStepEntity.setId(UUID.randomUUID());
-                log.info("KEY STEP ID: " + keyStepEntity.getId() + ", eId: " + keyStep.getEId());
+                log.info("KEY STEP ID: " + keyStepEntity.getId() + ", eId: " + keyStep.getEksId());
             }
             else keyStepEntity.setId(keyStep.getId());
             return keyStepEntity;
@@ -172,7 +174,7 @@ public class EksDataAccessMapper {
                 .status(keyStepEntity.getStatus())
                 .content(keyStepEntity.getContent())
                 .createdAt(keyStepEntity.getCreatedAt())
-                .eId(keyStepEntity.getEks().getId())
+                .eksId(keyStepEntity.getEks().getId())
                 .ordinalNumber(keyStepEntity.getOrdinalNumber())
                 .build()).toList();
     }

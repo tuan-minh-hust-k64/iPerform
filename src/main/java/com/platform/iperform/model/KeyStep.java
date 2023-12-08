@@ -16,7 +16,7 @@ import java.util.UUID;
 @Setter
 public class KeyStep {
     private final UUID id;
-    private final UUID eId;
+    private final UUID eksId;
     private final ZonedDateTime createdAt;
     private String content;
     private EksStatus status;
@@ -27,7 +27,7 @@ public class KeyStep {
     public String toString() {
         return "KeyStep{" +
                 "id=" + id +
-                ", eId=" + eId +
+                ", eId=" + eksId +
                 ", createdAt=" + createdAt +
                 ", content='" + content + '\'' +
                 ", status=" + status +
@@ -41,11 +41,11 @@ public class KeyStep {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         KeyStep keyStep = (KeyStep) o;
-        return Objects.equals(id, keyStep.id) && Objects.equals(eId, keyStep.eId);
+        return Objects.equals(id, keyStep.id) && Objects.equals(eksId, keyStep.eksId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, eId);
+        return Objects.hash(id, eksId);
     }
 }

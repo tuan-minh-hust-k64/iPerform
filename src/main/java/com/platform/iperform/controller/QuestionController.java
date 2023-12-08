@@ -12,6 +12,9 @@ import java.beans.PropertyEditorSupport;
 
 @Controller
 @RequestMapping(value = "/question")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
+
 public class QuestionController {
     private final QuestionService questionService;
 

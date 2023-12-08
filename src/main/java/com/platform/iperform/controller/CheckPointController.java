@@ -12,12 +12,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
 @RequestMapping(value = "/check-point")
 public class CheckPointController {
     private final CheckPointService checkPointService;
 
     public CheckPointController(CheckPointService checkPointService) {
         this.checkPointService = checkPointService;
+    }
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<CheckPointResponse> getCheckPointByIdAndUserId(@PathVariable UUID id) {
+
     }
     @GetMapping
     public ResponseEntity<CheckPointResponse> getCheckPointByUserId(@RequestParam UUID userId) {

@@ -13,6 +13,8 @@ import java.util.UUID;
 @RestController
 @Slf4j
 @RequestMapping(value = "/eks")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
 public class EksController {
     private final EksService eksService;
 
@@ -23,6 +25,11 @@ public class EksController {
     @GetMapping
     public ResponseEntity<EksResponse> getEksByUserId(@RequestParam UUID userId, @RequestParam String timePeriod) {
         EksResponse result = eksService.getEksByUserId(userId, timePeriod);
+        return ResponseEntity.ok(result);
+    }
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<EksResponse> getEksById(@PathVariable UUID id) {
+        EksResponse result = eksService.getEksById(id);
         return ResponseEntity.ok(result);
     }
     @PostMapping

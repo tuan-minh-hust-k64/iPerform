@@ -1,13 +1,13 @@
 package com.platform.iperform.service;
 
-import com.platform.iperform.common.dto.CheckPointRequest;
-import com.platform.iperform.common.dto.CheckPointResponse;
+import com.platform.iperform.common.dto.request.CheckPointRequest;
+import com.platform.iperform.common.dto.response.CheckPointResponse;
+import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.dataaccess.checkpoint.adapter.CheckPointItemRepositoryImpl;
 import com.platform.iperform.dataaccess.checkpoint.adapter.CheckPointRepositoryImpl;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
 import com.platform.iperform.dataaccess.checkpoint.mapper.CheckPointDataAccessMapper;
-import com.platform.iperform.dataaccess.eks.exception.EksNotFoundException;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.model.CheckPointItem;
 import org.springframework.beans.BeanUtils;
@@ -55,7 +55,7 @@ public class CheckPointService {
     @Transactional
     public CheckPointResponse updateCheckPoint(CheckPointRequest checkPointRequest) {
         CheckPointEntity checkPointEntity = checkPointRepository.findById(checkPointRequest.getCheckPoint().getId())
-                .orElseThrow(() -> new EksNotFoundException("Not Found CheckPoint with id: " + checkPointRequest.getCheckPoint().getId()));
+                .orElseThrow(() -> new NotFoundException("Not Found CheckPoint with id: " + checkPointRequest.getCheckPoint().getId()));
         checkPointEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         List<CheckPointItem> checkPointItemEntities = checkPointRequest.getCheckPoint().getCheckPointItems();
         checkPointItemRepository.saveAll(checkPointItemEntities);
@@ -70,9 +70,12 @@ public class CheckPointService {
                 .build();
     }
 
-//    @Transactional(readOnly = true)
-//    public CheckPointResponse findById(UUID id) {
-//        CheckPointEntity result = checkPointRepository.findById(id)
-//                .orElseThrow(() -> new );
-//    }
+    @Transactional(readOnly = true)
+    public CheckPointResponse findById(UUID id) {
+        CheckPointEntity result = checkPointRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("CheckPoint not found with id: " + id));
+        return CheckPointResponse.builder()
+                .checkPoint(List.of(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result)))
+                .build();
+    }
 }

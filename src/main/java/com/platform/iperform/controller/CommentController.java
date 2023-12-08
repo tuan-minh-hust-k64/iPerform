@@ -1,8 +1,7 @@
 package com.platform.iperform.controller;
 
-import com.platform.iperform.common.dto.CheckInResponse;
-import com.platform.iperform.common.dto.CommentRequest;
-import com.platform.iperform.common.dto.CommentResponse;
+import com.platform.iperform.common.dto.request.CommentRequest;
+import com.platform.iperform.common.dto.response.CommentResponse;
 import com.platform.iperform.service.CommentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

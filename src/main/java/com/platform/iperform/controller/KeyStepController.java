@@ -1,16 +1,11 @@
 package com.platform.iperform.controller;
 
-import com.platform.iperform.common.dto.EksRequest;
-import com.platform.iperform.common.dto.EksResponse;
-import com.platform.iperform.common.dto.KeyStepRequest;
-import com.platform.iperform.common.dto.KeyStepResponse;
+import com.platform.iperform.common.dto.request.KeyStepRequest;
+import com.platform.iperform.common.dto.response.KeyStepResponse;
 import com.platform.iperform.service.KeyStepService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 @Controller
 @RequestMapping(value = "/key-step")

@@ -1,6 +1,6 @@
 package com.platform.iperform.dataaccess.config.adapter;
 
-import com.platform.iperform.common.exception.ConfigNotFoundException;
+import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.dataaccess.config.entity.ConfigEntity;
 import com.platform.iperform.dataaccess.config.mapper.ConfigDataAccessMapper;
 import com.platform.iperform.dataaccess.config.repository.ConfigJpaRepository;
@@ -22,7 +22,7 @@ public class ConfigRepositoryImpl {
 
     public Optional<Config> getConfigPage() {
         return Optional.ofNullable(configDataAccessMapper.configEntityToConfig(configJpaRepository.findAll().stream().findFirst().orElseThrow(
-                ConfigNotFoundException::new
+                NotFoundException::new
         )));
     }
     public Config save(Config config) {

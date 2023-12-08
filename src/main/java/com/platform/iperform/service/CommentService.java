@@ -1,8 +1,8 @@
 package com.platform.iperform.service;
 
-import com.platform.iperform.common.dto.CommentRequest;
-import com.platform.iperform.common.dto.CommentResponse;
-import com.platform.iperform.common.exception.CommentNotFoundException;
+import com.platform.iperform.common.dto.request.CommentRequest;
+import com.platform.iperform.common.dto.response.CommentResponse;
+import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.dataaccess.comment.adapter.CommentRepositoryImpl;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
@@ -45,7 +45,7 @@ public class CommentService {
     @Transactional
     public CommentResponse updateComment(CommentRequest commentRequest) {
         CommentEntity commentEntity = commentRepository.findById(commentRequest.getComment().getId())
-                .orElseThrow(() -> new CommentNotFoundException("Not Found Comment with id: " + commentRequest.getComment().getId()));
+                .orElseThrow(() -> new NotFoundException("Not Found Comment with id: " + commentRequest.getComment().getId()));
         commentEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
                 commentRequest.getComment(),

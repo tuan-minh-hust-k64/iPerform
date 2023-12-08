@@ -1,11 +1,11 @@
 package com.platform.iperform.controller;
 
-import com.platform.iperform.common.dto.EksRequest;
-import com.platform.iperform.common.dto.EksResponse;
+import com.platform.iperform.common.dto.request.EksRequest;
+import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.service.EksService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;

@@ -1,13 +1,13 @@
 package com.platform.iperform.service;
 
-import com.platform.iperform.common.dto.EksRequest;
-import com.platform.iperform.common.dto.EksResponse;
+import com.platform.iperform.common.dto.request.EksRequest;
+import com.platform.iperform.common.dto.response.EksResponse;
+import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.dataaccess.comment.adapter.CommentRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.adapter.EksRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.adapter.KeyStepRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.entity.EksEntity;
-import com.platform.iperform.dataaccess.eks.exception.EksNotFoundException;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.model.Eks;
 import com.platform.iperform.model.KeyStep;
@@ -45,8 +45,9 @@ public class EksService {
     }
     @Transactional
     public EksResponse updateEks(EksRequest eksRequest) {
-        EksEntity eksEntity = eksRepository.findById(eksRequest.getData().getId())
-                .orElseThrow(() -> new EksNotFoundException("Not Found Eks with id: " + eksRequest.getData().getId()));
+
+        EksEntity eksEntity = eksRepository.findById(eksRequest.getEks().get(0).getId())
+                .orElseThrow(() -> new NotFoundException("Not Found Eks with id: " + eksRequest.getEks().get(0).getId()));
         eksEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         List<KeyStep> keySteps = eksRequest.getData().getKeySteps();
         keyStepRepository.saveAll(keySteps);
@@ -71,10 +72,12 @@ public class EksService {
                 .eks(result.orElse(List.of()))
                 .build();
     }
+
+
     @Transactional(readOnly = true)
     public EksResponse getEksById(UUID eksId) {
         EksEntity result = eksRepository.findById(eksId)
-                .orElseThrow(() -> new EksNotFoundException("Not Found Eks with id: " + eksId));
+                .orElseThrow(() -> new NotFoundException("Not Found Eks with id: " + eksId));
         return EksResponse.builder()
                 .data(eksDataAccessMapper.eksEntityToEks(result))
                 .build();

@@ -1,12 +1,11 @@
 package com.platform.iperform.service;
 
-import com.platform.iperform.common.dto.QuestionRequest;
-import com.platform.iperform.common.dto.QuestionResponse;
+import com.platform.iperform.common.dto.request.QuestionRequest;
+import com.platform.iperform.common.dto.response.QuestionResponse;
+import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
-import com.platform.iperform.common.valueobject.QuestionStatus;
 import com.platform.iperform.dataaccess.comment.adapter.QuestionRepositoryImpl;
 import com.platform.iperform.dataaccess.comment.entity.QuestionEntity;
-import com.platform.iperform.dataaccess.comment.exception.QuestionNotFoundException;
 import com.platform.iperform.dataaccess.comment.mapper.QuestionDataMapper;
 import com.platform.iperform.model.Question;
 import org.springframework.beans.BeanUtils;
@@ -35,7 +34,7 @@ public class QuestionService {
     }
     public QuestionResponse updateQuestion(QuestionRequest questionRequest) {
         QuestionEntity questionEntity = questionRepository.findById(questionRequest.getQuestions().get(0).getId())
-                .orElseThrow(() -> new QuestionNotFoundException("Not found question with id: " + questionRequest.getQuestions().get(0).getId()));
+                .orElseThrow(() -> new NotFoundException("Not found question with id: " + questionRequest.getQuestions().get(0).getId()));
         questionEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
                 questionRequest.getQuestions().get(0),

@@ -1,9 +1,7 @@
 package com.platform.iperform.controller;
 
-import com.platform.iperform.common.dto.CheckPointRequest;
-import com.platform.iperform.common.dto.CheckPointResponse;
-import com.platform.iperform.common.dto.KeyStepRequest;
-import com.platform.iperform.common.dto.KeyStepResponse;
+import com.platform.iperform.common.dto.request.CheckPointRequest;
+import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.service.CheckPointService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +21,8 @@ public class CheckPointController {
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<CheckPointResponse> getCheckPointByIdAndUserId(@PathVariable UUID id) {
-
+        CheckPointResponse result = checkPointService.findById(id);
+        return ResponseEntity.ok(result);
     }
     @GetMapping
     public ResponseEntity<CheckPointResponse> getCheckPointByUserId(@RequestParam UUID userId) {

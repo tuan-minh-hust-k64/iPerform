@@ -42,4 +42,6 @@ public class EksRepositoryImpl {
         return eksJpaRepository.findById(eId);
     }
 
+    public Optional<EksEntity> findByIdAndUserId(UUID id, UUID userId) { return eksJpaRepository.findByIdAndUserId(id, userId); }
+
 }

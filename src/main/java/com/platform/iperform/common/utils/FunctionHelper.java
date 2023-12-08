@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -58,8 +59,10 @@ public class FunctionHelper {
     }
 
     public List<Permission> authorizationHrm(AuthRequest authRequest) throws IOException {
-        String url = "https://hrms-dev.ikamegroup.com/api/v1/iam/users/get-list-access?user_id=53bf6a4f-e0be-4e60-8382-3e75d0664a84&resource_type=Web%20BOT";
-        HttpURLConnection conn = getHttpURLConnection("https://hrms-dev.ikamegroup.com/api/v1/iam/users/get-list-access?user_id=53bf6a4f-e0be-4e60-8382-3e75d0664a84&resource_type=Web%20BOT");
+        StringBuilder url = new StringBuilder("https://hrms-dev.ikamegroup.com/api/v1/iam/users/get-list-access");
+        url.append("?user_id=").append(URLEncoder.encode(authRequest.getUserId(), StandardCharsets.UTF_8))
+                .append("&resource_type=").append(URLEncoder.encode(authRequest.getResourceType(), StandardCharsets.UTF_8));
+        HttpURLConnection conn = getHttpURLConnection(url.toString());
         try(BufferedReader br = new BufferedReader(
                 new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
@@ -67,7 +70,6 @@ public class FunctionHelper {
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
-            log.info(response.toString());
             return GSON.fromJson(response.toString(), new TypeToken<List<Permission>>(){}.getType());
         }
     }

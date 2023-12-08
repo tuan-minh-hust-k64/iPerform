@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface EksJpaRepository extends JpaRepository<EksEntity, UUID> {
     Optional<List<EksEntity>> findByUserIdAndTimePeriod(UUID userId, String timePeriod);
+    Optional<EksEntity> findByIdAndUserId(UUID id, UUID userId);
 }

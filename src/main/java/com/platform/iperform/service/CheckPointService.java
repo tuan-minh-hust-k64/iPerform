@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class CheckPointService {
@@ -51,7 +52,7 @@ public class CheckPointService {
                 .build();
     }
     @Transactional
-    public CheckPointResponse updateCheckPoint(CheckPointRequest checkPointRequest) {
+    public CheckPointResponse updateCheckPointByUserId(CheckPointRequest checkPointRequest, UUID userId) {
         CheckPointEntity checkPointEntity = checkPointRepository.findById(checkPointRequest.getCheckPoint().getId())
                 .orElseThrow(() -> new NotFoundException("Not Found CheckPoint with id: " + checkPointRequest.getCheckPoint().getId()));
         checkPointEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));

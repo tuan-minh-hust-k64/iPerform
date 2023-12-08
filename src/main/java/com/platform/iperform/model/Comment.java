@@ -17,7 +17,7 @@ import java.util.UUID;
 @Setter
 public class Comment {
     private final UUID id;
-    private final UUID userId;
+    private UUID userId;
     private final UUID parentId;
     private final ZonedDateTime createdAt;
     private CommentType type;

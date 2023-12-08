@@ -1,6 +1,7 @@
 package com.platform.iperform.common.exception.handler;
 
 import com.platform.iperform.common.exception.ErrorCommon;
+import com.platform.iperform.common.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -32,14 +33,14 @@ public class GlobalExceptionHandler {
                 .message("Data invalid!")
                 .build();
     }
-//    @ResponseBody
-//    @ExceptionHandler(value = {Exception.class})
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorCommon handleException(Exception exception) {
-//        log.error(exception.getMessage(), exception);
-//        return ErrorCommon.builder()
-//                .code(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-//                .message("Unexpected err!")
-//                .build();
-//    }
+    @ResponseBody
+    @ExceptionHandler(value = {NotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorCommon handleExceptionNotFound(Exception exception) {
+        log.error(exception.getMessage(), exception);
+        return ErrorCommon.builder()
+                .code(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .message(exception.getMessage())
+                .build();
+    }
 }

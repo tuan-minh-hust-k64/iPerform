@@ -37,4 +37,6 @@ public class CommentRepositoryImpl {
     public Optional<CommentEntity> findById(UUID id) {
         return commentJpaRepository.findById(id);
     }
+
+    public Optional<CommentEntity> findByIdAndUserId(UUID id, UUID userId) { return commentJpaRepository.findByIdAndUserId(id, userId); }
 }

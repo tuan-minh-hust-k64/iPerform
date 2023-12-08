@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class CommentService {
@@ -43,8 +44,8 @@ public class CommentService {
                 .build();
     }
     @Transactional
-    public CommentResponse updateComment(CommentRequest commentRequest) {
-        CommentEntity commentEntity = commentRepository.findById(commentRequest.getComment().getId())
+    public CommentResponse updateCommentByUserId(CommentRequest commentRequest, UUID userId) {
+        CommentEntity commentEntity = commentRepository.findByIdAndUserId(commentRequest.getComment().getId(), userId)
                 .orElseThrow(() -> new NotFoundException("Not Found Comment with id: " + commentRequest.getComment().getId()));
         commentEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(

@@ -18,7 +18,7 @@ public class JwtUtils {
 
   private String jwtSecret = "fndfhjasdfjaewnmrjnhajsdjfjnjandfnmdnjfwjgfndasdfjahefjnbd";
 
-  private int jwtExpirationMs = 300000;
+  private int jwtExpirationMs = 24*60*60*1000;
 
   public String generateJwtToken(Authentication authentication) {
 

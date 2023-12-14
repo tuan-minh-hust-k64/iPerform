@@ -2,9 +2,11 @@ package com.platform.iperform.dataaccess.checkpoint.mapper;
 
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointItemEntity;
+import com.platform.iperform.dataaccess.checkpoint.entity.CollaborationFeedbackEntity;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.model.CheckPointItem;
+import com.platform.iperform.model.CollaborationFeedback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -94,5 +96,29 @@ public class CheckPointDataAccessMapper {
                 .content(checkPointItemEntity.getContent())
                 .build()).toList();
     }
-
+    public CollaborationFeedbackEntity collaborationFeedbackToCollaborationFeedbackEntity(CollaborationFeedback collaborationFeedback) {
+        return CollaborationFeedbackEntity.builder()
+                .strengths(collaborationFeedback.getStrengths())
+                .targetId(collaborationFeedback.getTargetId())
+                .reviewerId(collaborationFeedback.getReviewerId())
+                .weaknesses(collaborationFeedback.getWeaknesses())
+                .timePeriod(collaborationFeedback.getTimePeriod())
+                .createdAt(collaborationFeedback.getId() == null? ZonedDateTime.now(ZoneId.of("UTC")):collaborationFeedback.getCreatedAt())
+                .lastUpdateAt(collaborationFeedback.getId() == null? ZonedDateTime.now(ZoneId.of("UTC")):collaborationFeedback.getLastUpdateAt())
+                .id(collaborationFeedback.getId() == null? UUID.randomUUID():collaborationFeedback.getId())
+                .status(collaborationFeedback.getStatus())
+                .build();
+    }
+    public CollaborationFeedback collaborationFeedbackEntityToCollaborationFeedback(CollaborationFeedbackEntity collaborationFeedbackEntity) {
+        return CollaborationFeedback.builder()
+                .strengths(collaborationFeedbackEntity.getStrengths())
+                .targetId(collaborationFeedbackEntity.getTargetId())
+                .timePeriod(collaborationFeedbackEntity.getTimePeriod())
+                .weaknesses(collaborationFeedbackEntity.getWeaknesses())
+                .reviewerId(collaborationFeedbackEntity.getReviewerId())
+                .createdAt(collaborationFeedbackEntity.getCreatedAt())
+                .id(collaborationFeedbackEntity.getId())
+                .lastUpdateAt(collaborationFeedbackEntity.getLastUpdateAt())
+                .build();
+    }
 }

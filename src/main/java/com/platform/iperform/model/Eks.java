@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Eks {
     private final UUID id;
-    private final UUID userId;
+    private UUID userId;
     private final ZonedDateTime createdAt;
     private EksType type;
     private String content;
@@ -26,7 +26,7 @@ public class Eks {
     private String description;
 
     private final List<KeyStep> keySteps;
-    private final List<Comment> comments;
+    private List<Comment> comments;
     private final List<CheckIn> checkIns;
 
 //    public void initEks()

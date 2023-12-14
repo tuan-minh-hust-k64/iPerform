@@ -8,9 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
-@RequestMapping(value = "/check-in")
+@RequestMapping(value = "/api/check-in")
 public class CheckInController {
     private final CheckInService checkInService;
 

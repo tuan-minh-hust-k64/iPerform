@@ -24,6 +24,7 @@ public class CommentEntity {
     private UUID id;
     private UUID userId;
     private UUID parentId;
+    private String name;
     @Enumerated(EnumType.STRING)
     private CommentStatus status;
 //    @JoinColumn(name = "parent_id")

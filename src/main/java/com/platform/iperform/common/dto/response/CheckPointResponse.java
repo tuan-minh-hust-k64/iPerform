@@ -11,4 +11,5 @@ import java.util.List;
 public class CheckPointResponse {
     private final List<CheckPoint> checkPoint;
     private final String message;
+    private final CheckPoint data;
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Builder
@@ -22,4 +23,5 @@ public class ConfigEntity {
     private String guidCheckIn;
     private String guidCheckPoint;
     private String guidEks;
+    private ZonedDateTime dueDateCheckPoint;
 }

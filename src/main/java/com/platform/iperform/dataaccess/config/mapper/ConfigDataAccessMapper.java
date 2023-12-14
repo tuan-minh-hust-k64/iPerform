@@ -16,6 +16,7 @@ public class ConfigDataAccessMapper {
                 .guidCheckIn(configEntity.getGuidCheckIn())
                 .guidCheckPoint(configEntity.getGuidCheckPoint())
                 .guidEks(configEntity.getGuidEks())
+                .dueDateCheckPoint(configEntity.getDueDateCheckPoint())
                 .build();
     }
 
@@ -27,6 +28,7 @@ public class ConfigDataAccessMapper {
                 .checkIn(config.isCheckIn())
                 .checkPoint(config.isCheckPoint())
                 .guidCheckIn(config.getGuidCheckIn())
+                .dueDateCheckPoint(config.getDueDateCheckPoint())
                 .build();
     }
 }

@@ -9,15 +9,17 @@ DROP TYPE IF EXISTS comment_type;
 DROP TYPE IF EXISTS check_in_status;
 DROP TYPE IF EXISTS question_status;
 DROP TYPE IF EXISTS check_point_status;
+DROP TYPE IF EXISTS collaboration_feedback_status;
 
 
-CREATE TYPE expectation_type as ENUM ('IKAME_WHAT', 'IKAME_HOW', 'IKAME_LEVELUP');
-CREATE TYPE eks_status as ENUM ('ACHIEVED', 'COMPLETED', 'ACTIVE');
+CREATE TYPE expectation_type as ENUM ('GROW_YOURSELF', 'GROW_YOUR_TEAM', 'GROW_YOUR_COMPANY');
+CREATE TYPE eks_status as ENUM ('ACHIEVED', 'COMPLETED', 'ACTIVE', 'INACTIVE', 'DRAFT');
 CREATE TYPE comment_status as ENUM ('DELETED', 'INIT');
 CREATE TYPE comment_type as ENUM ('COMMENT', 'FEEDBACK');
-CREATE TYPE check_in_status as ENUM ('PENDING', 'COMPLETED');
+CREATE TYPE check_in_status as ENUM ('PENDING', 'COMPLETED', 'ATTACK', 'RISK');
 CREATE TYPE question_status as ENUM ('DISABLE', 'ENABLE');
 CREATE TYPE check_point_status as ENUM ('INIT', 'COMPLETED');
+CREATE TYPE collaboration_feedback_status as ENUM ('INIT', 'COMPLETED');
 
 DROP TABLE IF EXISTS "iperform".key_step CASCADE;
 DROP TABLE IF EXISTS "iperform".expectation CASCADE;
@@ -27,6 +29,7 @@ DROP TABLE IF EXISTS "iperform".check_in CASCADE;
 DROP TABLE IF EXISTS "iperform".comment CASCADE;
 DROP TABLE IF EXISTS "iperform".question CASCADE;
 DROP TABLE IF EXISTS "iperform".config CASCADE;
+DROP TABLE IF EXISTS "iperform".collaboration_feedback CASCADE;
 
 
 
@@ -98,6 +101,7 @@ CREATE TABLE "iperform".check_in
 CREATE TABLE "iperform".comment
 (
     id uuid NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
     parent_id uuid NOT NULL,
     user_id uuid NOT NULL,
     type comment_type NOT NULL,
@@ -108,6 +112,21 @@ CREATE TABLE "iperform".comment
     question_id uuid,
     CONSTRAINT comment_key PRIMARY KEY (id)
 );
+CREATE TABLE "iperform".collaboration_feedback
+(
+    id uuid NOT NULL,
+    targetId uuid NOT NULL,
+    reviewerId uuid NOT NULL,
+    strengths character varying COLLATE pg_catalog."default" NOT NULL,
+    weaknesses character varying COLLATE pg_catalog."default" NOT NULL,
+    status collaboration_feedback_status NOT NULL,
+    time_period character varying COLLATE pg_catalog."default" NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    last_update_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+    CONSTRAINT collaboration_feedback_key PRIMARY KEY (id)
+);
+
 CREATE TABLE "iperform".config
 (
     id uuid NOT NULL,
@@ -115,7 +134,8 @@ CREATE TABLE "iperform".config
     check_in boolean NOT NULL,
     guid_check_in character varying COLLATE pg_catalog."default" NOT NULL,
     guid_check_point character varying COLLATE pg_catalog."default" NOT NULL,
-    guid_eks character varying COLLATE pg_catalog."default" NOT NULL
+    guid_eks character varying COLLATE pg_catalog."default" NOT NULL,
+    due_date_check_point TIMESTAMP WITH TIME ZONE
 );
 CREATE TABLE "iperform".question
 (

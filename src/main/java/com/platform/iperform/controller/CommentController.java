@@ -4,14 +4,15 @@ import com.platform.iperform.common.dto.request.CommentRequest;
 import com.platform.iperform.common.dto.response.CommentResponse;
 import com.platform.iperform.service.CommentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @Controller
-@RequestMapping(value = "/comment")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@RequestMapping(value = "/api/comment")
+@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
 
 public class CommentController {
@@ -29,12 +30,15 @@ public class CommentController {
     }
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@RequestBody CommentRequest commentRequest) {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        commentRequest.getComment().setUserId(UUID.fromString(userId));
         CommentResponse result = commentService.createComment(commentRequest);
         return ResponseEntity.ok(result);
     }
     @PutMapping
     public ResponseEntity<CommentResponse> updateComment(@RequestBody CommentRequest commentRequest) {
-        CommentResponse result = commentService.updateComment(commentRequest);
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        CommentResponse result = commentService.updateCommentByUserId(commentRequest, UUID.fromString(userId));
         return ResponseEntity.ok(result);
     }
 }

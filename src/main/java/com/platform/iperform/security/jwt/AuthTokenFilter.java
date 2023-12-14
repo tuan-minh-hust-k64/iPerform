@@ -3,6 +3,7 @@ package com.platform.iperform.security.jwt;
 import com.platform.iperform.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
@@ -36,9 +39,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
-        log.info("INFO: " + username);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        log.info("PRO:" + userDetails.getAuthorities().toString() + userDetails.getPassword());
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
             userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

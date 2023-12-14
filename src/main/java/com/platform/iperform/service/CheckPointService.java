@@ -49,12 +49,12 @@ public class CheckPointService {
                 checkPointRepository.save(checkPointDataAccessMapper.checkPointToCheckPointEntity(checkPointRequest.getCheckPoint()))
         );
         return CheckPointResponse.builder()
-                .checkPoint(List.of(result))
+                .data(result)
                 .build();
     }
     @Transactional
-    public CheckPointResponse updateCheckPoint(CheckPointRequest checkPointRequest) {
-        CheckPointEntity checkPointEntity = checkPointRepository.findById(checkPointRequest.getCheckPoint().getId())
+    public CheckPointResponse updateCheckPointByUserId(CheckPointRequest checkPointRequest, UUID userId) {
+        CheckPointEntity checkPointEntity = checkPointRepository.findByIdAndUserId(checkPointRequest.getCheckPoint().getId(), userId)
                 .orElseThrow(() -> new NotFoundException("Not Found CheckPoint with id: " + checkPointRequest.getCheckPoint().getId()));
         checkPointEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         List<CheckPointItem> checkPointItemEntities = checkPointRequest.getCheckPoint().getCheckPointItems();
@@ -66,16 +66,24 @@ public class CheckPointService {
         );
         CheckPointEntity result = checkPointRepository.save(checkPointEntity);
         return CheckPointResponse.builder()
-                .checkPoint(List.of(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result)))
+                .data(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result))
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public CheckPointResponse findByIdAndUserId(UUID id, UUID userId) {
+        CheckPointEntity result = checkPointRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new NotFoundException("CheckPoint not found with id: " + id));
+        return CheckPointResponse.builder()
+                .data(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result))
+                .build();
+    }
     @Transactional(readOnly = true)
     public CheckPointResponse findById(UUID id) {
         CheckPointEntity result = checkPointRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("CheckPoint not found with id: " + id));
         return CheckPointResponse.builder()
-                .checkPoint(List.of(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result)))
+                .data(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result))
                 .build();
     }
 }

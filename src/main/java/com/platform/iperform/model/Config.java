@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class Config {
     private final UUID id;
     private boolean checkPoint;
     private boolean checkIn;
+    private final ZonedDateTime dueDateCheckPoint;
     private String guidCheckIn;
     private String guidCheckPoint;
     private String guidEks;

@@ -17,7 +17,7 @@ import java.util.UUID;
 @Setter
 public class CheckPoint {
     private UUID id;
-    private final UUID userId;
+    private UUID userId;
     private ZonedDateTime createdAt;
     private String title;
     private CheckPointStatus status;

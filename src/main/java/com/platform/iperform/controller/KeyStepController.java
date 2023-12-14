@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping(value = "/key-step")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@RequestMapping(value = "/api/key-step")
+@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
 
 public class KeyStepController {

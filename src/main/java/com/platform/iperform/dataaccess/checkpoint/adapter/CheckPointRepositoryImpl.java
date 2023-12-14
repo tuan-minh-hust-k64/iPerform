@@ -36,4 +36,7 @@ public class CheckPointRepositoryImpl {
     public Optional<CheckPointEntity> findById(UUID id) {
         return checkPointJpaRepository.findById(id);
     }
+    public Optional<CheckPointEntity> findByIdAndUserId(UUID id, UUID userId) {
+        return checkPointJpaRepository.findByIdAndUserId(id, userId);
+    }
 }

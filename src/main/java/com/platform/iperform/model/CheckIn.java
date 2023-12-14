@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CheckIn {
     private final UUID id;
-    private final UUID eId;
+    private final UUID eksId;
     private final ZonedDateTime createdAt;
     private String content;
     private CheckInStatus status;
@@ -29,7 +29,7 @@ public class CheckIn {
     public String toString() {
         return "CheckIn{" +
                 "id=" + id +
-                ", eId=" + eId +
+                ", eId=" + eksId +
                 ", createdAt=" + createdAt +
                 ", content='" + content + '\'' +
                 ", status=" + status +

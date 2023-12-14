@@ -31,13 +31,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     try {
       List<Permission> permission = functionHelper.authorizationHrm(AuthRequest.builder()
                       .userId(username)
+                      .resourceType("iPerform")
               .build());
-      log.info(permission.toString());
       User user = User.builder()
               .id(UUID.randomUUID())
               .username(username)
-              .email("tuanminh@gmail.com")
-              .roles(List.of("ADMIN"))
+              .roles(permission.stream().map(item -> "ROLE_" + item.permission().toUpperCase()).distinct().toList())
               .password(new BCryptPasswordEncoder().encode(username))
               .build();
 

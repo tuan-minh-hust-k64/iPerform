@@ -1,7 +1,9 @@
 package com.platform.iperform.common.exception.handler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.exception.ErrorCommon;
+import com.platform.iperform.common.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -21,7 +23,7 @@ public class GlobalExceptionHandler {
         log.error(exception.getMessage(), exception);
         return ErrorCommon.builder()
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("Unexpected err!")
+                .message(exception.getMessage())
                 .build();
     }
     @ResponseBody
@@ -41,7 +43,25 @@ public class GlobalExceptionHandler {
         log.error(exception.getMessage(), exception);
         return ErrorCommon.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message("Data invalid format!")
+                .message("Data invalid format!").build();
+    }
+    @ExceptionHandler(value = {NotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorCommon handleExceptionNotFound(Exception exception) {
+        log.error(exception.getMessage(), exception);
+        return ErrorCommon.builder()
+                .code(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .message(exception.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(value = {AuthenticateException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorCommon handleExceptionAuthenticate(Exception exception) {
+        log.error(exception.getMessage(), exception);
+        return ErrorCommon.builder()
+                .code(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                .message(exception.getMessage())
                 .build();
     }
 }

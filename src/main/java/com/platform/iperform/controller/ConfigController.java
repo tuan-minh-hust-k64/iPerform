@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping(value = "/config")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@RequestMapping(value = "/api/config")
+@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
 
 public class ConfigController {

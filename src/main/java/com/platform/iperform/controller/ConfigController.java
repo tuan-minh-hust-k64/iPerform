@@ -28,4 +28,9 @@ public class ConfigController {
         ConfigResponse result = configService.updateConfig(configRequest);
         return ResponseEntity.ok(result);
     }
+    @GetMapping
+    public ResponseEntity<ConfigResponse> getConfig() {
+        ConfigResponse result = configService.getConfig();
+        return ResponseEntity.ok(result);
+    }
 }

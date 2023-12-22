@@ -21,9 +21,7 @@ public class ConfigRepositoryImpl {
     }
 
     public Optional<Config> getConfigPage() {
-        return Optional.ofNullable(configDataAccessMapper.configEntityToConfig(configJpaRepository.findAll().stream().findFirst().orElseThrow(
-                NotFoundException::new
-        )));
+        return Optional.ofNullable(configDataAccessMapper.configEntityToConfig(configJpaRepository.findAll().stream().findFirst().orElse(ConfigEntity.builder().build())));
     }
     public Config save(Config config) {
         return configDataAccessMapper.configEntityToConfig(

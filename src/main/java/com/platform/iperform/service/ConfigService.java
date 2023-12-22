@@ -12,6 +12,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Component
 public class ConfigService {
     private final ConfigRepositoryImpl configRepository;
@@ -33,14 +35,26 @@ public class ConfigService {
     }
     @Transactional
     public ConfigResponse updateConfig(ConfigRequest configRequest) {
-        ConfigEntity configEntity = configRepository.findById(configRequest.getConfig().getId())
-                .orElseThrow(() -> new NotFoundException("Not Found Config with id: " + configRequest.getConfig().getId()));
-        BeanUtils.copyProperties(
-                configRequest.getConfig(),
-                configEntity,
-                functionHelper.getNullPropertyNames(configRequest.getConfig())
-        );
-        Config result = configRepository.save(configDataAccessMapper.configEntityToConfig(configEntity));
+        if(configRequest.getConfig().getId() == null) {
+            return this.createConfig(configRequest);
+        } else {
+            ConfigEntity configEntity = configRepository.findById(configRequest.getConfig().getId())
+                    .orElseThrow(() -> new NotFoundException("Not Found Config with id: " + configRequest.getConfig().getId()));
+            BeanUtils.copyProperties(
+                    configRequest.getConfig(),
+                    configEntity,
+                    functionHelper.getNullPropertyNames(configRequest.getConfig())
+            );
+            Config result = configRepository.save(configDataAccessMapper.configEntityToConfig(configEntity));
+            return ConfigResponse.builder()
+                    .config(result)
+                    .build();
+        }
+    }
+
+    public ConfigResponse getConfig() {
+        Config result = configRepository.getConfigPage()
+                .orElse(Config.builder().build());
         return ConfigResponse.builder()
                 .config(result)
                 .build();

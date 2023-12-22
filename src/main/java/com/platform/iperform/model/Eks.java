@@ -25,7 +25,7 @@ public class Eks {
     private int ordinalNumber;
     private String description;
 
-    private final List<KeyStep> keySteps;
+    private List<KeyStep> keySteps;
     private List<Comment> comments;
     private final List<CheckIn> checkIns;
 

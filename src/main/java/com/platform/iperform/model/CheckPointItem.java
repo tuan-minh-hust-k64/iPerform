@@ -19,6 +19,7 @@ public class CheckPointItem {
     private final UUID checkPointId;
     private final ZonedDateTime createdAt;
     private String title;
+    private String subtitle;
     private String content;
     private ZonedDateTime lastUpdateAt;
 

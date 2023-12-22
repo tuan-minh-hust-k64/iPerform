@@ -2,7 +2,6 @@ package com.platform.iperform.common.utils;
 
 import com.google.gson.reflect.TypeToken;
 import com.platform.iperform.common.dto.request.AuthRequest;
-import com.platform.iperform.common.dto.response.AuthResponse;
 import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.model.Permission;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +26,22 @@ import java.util.*;
 public class FunctionHelper {
     private final static Gson GSON = new Gson();
 
+    public String calculateQuarter() {
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+        int quarter = (int) Math.ceil(month / 6.0);
+        return "H" + quarter + "-" + year;
+    }
+
+
     public String[] getNullPropertyNames(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
         Set<String> emptyNames = new HashSet<>();
         for (java.beans.PropertyDescriptor pd : pds) {
-            if (src.getPropertyValue(pd.getName()) == null) emptyNames.add(pd.getName());
+            if (src.getPropertyValue(pd.getName()) == null || Objects.requireNonNull(src.getPropertyValue(pd.getName())).toString().isEmpty()) emptyNames.add(pd.getName());
         }
 
         String[] result = new String[emptyNames.size()];
@@ -89,6 +97,35 @@ public class FunctionHelper {
         }
     }
 
+    public Map<String, Object> getManagerInfo(String userId) throws IOException {
+        StringBuilder url = new StringBuilder("https://hrms-dev.ikamegroup.com/api/v1/iam/users/get-manager-of-user");
+        url.append("?user_id=").append(URLEncoder.encode(userId, StandardCharsets.UTF_8));
+        HttpURLConnection conn = getHttpURLConnection(url.toString());
+        try(BufferedReader br = new BufferedReader(
+                new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            return GSON.fromJson(response.toString(), new TypeToken<Map<String, ?>>(){}.getType());
+        }
+    }
+    public List<Map<String, Object>> getTeamByManagerId(String userId) throws IOException {
+        StringBuilder url = new StringBuilder("https://hrms-dev.ikamegroup.com/api/v1/iam/users/get-all-for-team-permissions");
+        url.append("?user_id=").append(URLEncoder.encode(userId, StandardCharsets.UTF_8));
+        HttpURLConnection conn = getHttpURLConnection(url.toString());
+        try(BufferedReader br = new BufferedReader(
+                new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            return GSON.fromJson(response.toString(), new TypeToken<List<Map<String, ?>>>(){}.getType());
+        }
+    }
+
     public UUID authorizationMiddleware(UUID idManager, UUID idUser) {
         if(idManager == idUser) return idManager;
         if(checkPermissionHrm(idManager, idUser)) {
@@ -124,6 +161,10 @@ public class FunctionHelper {
             System.out.println(e.getMessage());
             throw new AuthenticateException("Could not load authenticate permission in HRM");
         }
+    }
+
+    public String generateEmailRequestCheckIn(String content, UUID userId) {
+        return "";
     }
 
     private static HttpURLConnection postHttpURLConnection(String linkUrl, String jsonBody,

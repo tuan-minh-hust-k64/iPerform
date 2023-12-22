@@ -4,6 +4,7 @@ import com.platform.iperform.common.dto.request.EksRequest;
 import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.EksStatus;
 import com.platform.iperform.dataaccess.comment.adapter.CommentRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.adapter.CheckInRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.adapter.EksRepositoryImpl;
@@ -56,7 +57,7 @@ public class EksService {
 
     public EksResponse updateEksByIdAndUserId(EksRequest eksRequest, UUID userId) {
         EksEntity eksEntity = eksRepository.findByIdAndUserId(eksRequest.getData().getId(), userId)
-                .orElseThrow(() -> new NotFoundException("Not Found Eks with id: " + eksRequest.getData().getId()));
+                .orElseThrow(() -> new NotFoundException("Not Found Eks with id: " + eksRequest.getData().getId() + ", userId: " + userId));
         eksEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         List<KeyStep> keySteps = eksRequest.getData().getKeySteps();
         List<CheckIn> checkIns = eksRequest.getData().getCheckIns();
@@ -82,6 +83,7 @@ public class EksService {
         result.forEach(item -> {
             Optional<List<Comment>> comments = commentRepository.getCommentByParentId(item.getId());
             item.setComments(comments.orElse(List.of()));
+            item.setKeySteps(item.getKeySteps().stream().filter(keyStep -> keyStep.getStatus() != EksStatus.INACTIVE).toList());
         });
         return EksResponse.builder()
                 .eks(result)
@@ -91,10 +93,13 @@ public class EksService {
 
     @Transactional(readOnly = true)
     public EksResponse getEksById(UUID eksId) {
-        EksEntity result = eksRepository.findById(eksId)
-                .orElseThrow(() -> new NotFoundException("Not Found Eks with id: " + eksId));
+        Eks result = eksDataAccessMapper.eksEntityToEks(eksRepository.findById(eksId)
+                .orElseThrow(() -> new NotFoundException("Not Found Eks with id: " + eksId)));
+        Optional<List<Comment>> comments = commentRepository.getCommentByParentId(result.getId());
+        result.setComments(comments.orElse(List.of()));
+        result.setKeySteps(result.getKeySteps().stream().filter(keyStep -> keyStep.getStatus() != EksStatus.INACTIVE).toList());
         return EksResponse.builder()
-                .data(eksDataAccessMapper.eksEntityToEks(result))
+                .data(result)
                 .build();
     }
 

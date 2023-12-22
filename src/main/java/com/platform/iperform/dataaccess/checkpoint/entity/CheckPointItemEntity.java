@@ -22,6 +22,7 @@ public class CheckPointItemEntity extends BaseEntityAllowComment{
     private CheckPointEntity checkPoint;
     private ZonedDateTime createdAt;
     private String title;
+    private String subtitle;
     private String content;
     private ZonedDateTime lastUpdateAt;
 

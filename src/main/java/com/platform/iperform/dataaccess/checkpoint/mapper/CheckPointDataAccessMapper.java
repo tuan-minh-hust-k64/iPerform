@@ -1,5 +1,7 @@
 package com.platform.iperform.dataaccess.checkpoint.mapper;
 
+import com.platform.iperform.common.valueobject.CheckPointStatus;
+import com.platform.iperform.common.valueobject.FeedbackStatus;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointItemEntity;
 import com.platform.iperform.dataaccess.checkpoint.entity.CollaborationFeedbackEntity;
@@ -45,7 +47,7 @@ public class CheckPointDataAccessMapper {
 //                .commentEntities(eksDataAccessMapper.commentsToCommentEntities(checkPoint.getComments()))
                 .lastUpdateAt(checkPoint.getLastUpdateAt())
                 .createdAt(checkPoint.getCreatedAt())
-                .status(checkPoint.getStatus())
+                .status(checkPoint.getStatus() == null? CheckPointStatus.INIT:checkPoint.getStatus())
                 .build();
         checkPointEntity.getCheckPointItemEntities().forEach(item -> {
             item.setCheckPoint(checkPointEntity);
@@ -68,6 +70,7 @@ public class CheckPointDataAccessMapper {
                     CheckPointItemEntity checkPointItemEntity = CheckPointItemEntity.builder()
 //                            .commentEntities(eksDataAccessMapper.commentsToCommentEntities(checkPointItem.getComments()))
                             .title(checkPointItem.getTitle())
+                            .subtitle(checkPointItem.getSubtitle())
                             .content(checkPointItem.getContent())
                             .createdAt(checkPointItem.getCreatedAt())
                             .checkPoint(new CheckPointEntity(checkPointItem.getCheckPointId()))
@@ -90,6 +93,7 @@ public class CheckPointDataAccessMapper {
         return checkPointItemEntities.stream().map(checkPointItemEntity -> CheckPointItem.builder()
                 .checkPointId(checkPointItemEntity.getCheckPoint().getId())
                 .title(checkPointItemEntity.getTitle())
+                .subtitle(checkPointItemEntity.getSubtitle())
                 .id(checkPointItemEntity.getId())
                 .lastUpdateAt(checkPointItemEntity.getLastUpdateAt())
                 .createdAt(checkPointItemEntity.getCreatedAt())
@@ -106,7 +110,7 @@ public class CheckPointDataAccessMapper {
                 .createdAt(collaborationFeedback.getId() == null? ZonedDateTime.now(ZoneId.of("UTC")):collaborationFeedback.getCreatedAt())
                 .lastUpdateAt(collaborationFeedback.getId() == null? ZonedDateTime.now(ZoneId.of("UTC")):collaborationFeedback.getLastUpdateAt())
                 .id(collaborationFeedback.getId() == null? UUID.randomUUID():collaborationFeedback.getId())
-                .status(collaborationFeedback.getStatus())
+                .status(collaborationFeedback.getStatus() == null? FeedbackStatus.INIT:collaborationFeedback.getStatus())
                 .build();
     }
     public CollaborationFeedback collaborationFeedbackEntityToCollaborationFeedback(CollaborationFeedbackEntity collaborationFeedbackEntity) {

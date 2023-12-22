@@ -23,7 +23,7 @@ public class CheckPoint {
     private CheckPointStatus status;
     private ZonedDateTime lastUpdateAt;
 
-    private final List<Comment> comments;
+    private List<Comment> comments;
     private final List<CheckPointItem> checkPointItems;
 
     @Override

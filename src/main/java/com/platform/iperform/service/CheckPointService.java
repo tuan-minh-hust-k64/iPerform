@@ -4,6 +4,7 @@ import com.platform.iperform.common.dto.request.CheckPointRequest;
 import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.dataaccess.checkpoint.adapter.CheckPointItemRepositoryImpl;
 import com.platform.iperform.dataaccess.checkpoint.adapter.CheckPointRepositoryImpl;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
@@ -41,6 +42,16 @@ public class CheckPointService {
         List<CheckPoint> result = checkPointRepository.getCheckPointByUserId(checkPointRequest.getUserId());
         return CheckPointResponse.builder()
                 .checkPoint(result)
+                .build();
+    }
+    @Transactional(readOnly = true)
+    public CheckPointResponse findByUserIdAndTitle(CheckPointRequest checkPointRequest) {
+        CheckPointEntity result = checkPointRepository.findByUserIdAndTitle(checkPointRequest.getUserId(), checkPointRequest.getTitle())
+                .orElse(CheckPointEntity.builder()
+                        .status(CheckPointStatus.INIT)
+                        .build());
+        return CheckPointResponse.builder()
+                .data(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result))
                 .build();
     }
     @Transactional

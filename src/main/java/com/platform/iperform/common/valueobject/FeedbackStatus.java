@@ -1,5 +1,5 @@
 package com.platform.iperform.common.valueobject;
 
 public enum FeedbackStatus {
-    INIT, COMPLETED
+    INIT, COMPLETED, DELETED
 }

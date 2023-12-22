@@ -4,6 +4,7 @@ import com.platform.iperform.common.dto.request.CollaborationFeedbackRequest;
 import com.platform.iperform.common.dto.response.CollaborationFeedbackResponse;
 import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.FeedbackStatus;
 import com.platform.iperform.dataaccess.checkpoint.adapter.CollaborationFeedbackRepositoryImpl;
 import com.platform.iperform.dataaccess.checkpoint.entity.CollaborationFeedbackEntity;
 import com.platform.iperform.dataaccess.checkpoint.mapper.CheckPointDataAccessMapper;
@@ -41,8 +42,8 @@ public class CollaborationFeedbackService {
                 .build();
     }
     @Transactional(readOnly = true)
-    public CollaborationFeedbackResponse getCollaborationByReviewerId(UUID reviewerId){
-        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByReviewerId(reviewerId)
+    public CollaborationFeedbackResponse getCollaborationByReviewerIdAndTimePeriod(UUID reviewerId, String timePeriod){
+        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByReviewerIdAndTimePeriod(reviewerId, timePeriod)
                 .stream().map(checkPointDataAccessMapper::collaborationFeedbackEntityToCollaborationFeedback).toList();
         return CollaborationFeedbackResponse.builder()
                 .collaborationFeedbacks(result)
@@ -53,11 +54,23 @@ public class CollaborationFeedbackService {
         CollaborationFeedbackEntity collaborationFeedbackEntity = collaborationFeedbackRepository.findById(collaborationFeedbackRequest.getCollaborationFeedback().getId())
                 .orElseThrow(() -> new NotFoundException("Not found collaboration feedback with id: " + collaborationFeedbackRequest.getCollaborationFeedback().getId()));
         collaborationFeedbackEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
+        collaborationFeedbackEntity.setStatus(FeedbackStatus.COMPLETED);
         BeanUtils.copyProperties(
                 collaborationFeedbackRequest.getCollaborationFeedback(),
                 collaborationFeedbackEntity,
                 functionHelper.getNullPropertyNames(collaborationFeedbackRequest.getCollaborationFeedback())
         );
+        CollaborationFeedbackEntity result = collaborationFeedbackRepository.save(collaborationFeedbackEntity);
+        return CollaborationFeedbackResponse.builder()
+                .data(checkPointDataAccessMapper.collaborationFeedbackEntityToCollaborationFeedback(result))
+                .build();
+    }
+    @Transactional
+    public CollaborationFeedbackResponse deleteCollaborationFeedbackById(CollaborationFeedbackRequest collaborationFeedbackRequest) {
+        CollaborationFeedbackEntity collaborationFeedbackEntity = collaborationFeedbackRepository.findById(collaborationFeedbackRequest.getId())
+                .orElseThrow(() -> new NotFoundException("Not found collaboration feedback with id: " + collaborationFeedbackRequest.getCollaborationFeedback().getId()));
+        collaborationFeedbackEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
+        collaborationFeedbackEntity.setStatus(FeedbackStatus.DELETED);
         CollaborationFeedbackEntity result = collaborationFeedbackRepository.save(collaborationFeedbackEntity);
         return CollaborationFeedbackResponse.builder()
                 .data(checkPointDataAccessMapper.collaborationFeedbackEntityToCollaborationFeedback(result))
@@ -69,6 +82,14 @@ public class CollaborationFeedbackService {
                 .orElseThrow(() -> new NotFoundException("Not found collaboration feedback with id: " + id));
         return CollaborationFeedbackResponse.builder()
                 .data(checkPointDataAccessMapper.collaborationFeedbackEntityToCollaborationFeedback(result))
+                .build();
+    }
+
+    public CollaborationFeedbackResponse getCollaborationByTargetIdIdAndTimePeriod(UUID targetId, String timePeriod) {
+        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByTargetIdIdAndTimePeriod(targetId, timePeriod)
+                .stream().map(checkPointDataAccessMapper::collaborationFeedbackEntityToCollaborationFeedback).toList();
+        return CollaborationFeedbackResponse.builder()
+                .collaborationFeedbacks(result)
                 .build();
     }
 }

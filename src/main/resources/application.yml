@@ -17,3 +17,14 @@ spring:
     platform: postgres
     schema: classpath:schema.sql
     initialization-mode: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: especiallygamesbdd@gmail.com
+    password: wiwvcqsubgnrzrwe
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

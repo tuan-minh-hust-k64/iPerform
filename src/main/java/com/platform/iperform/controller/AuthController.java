@@ -1,17 +1,13 @@
 package com.platform.iperform.controller;
 
 import com.platform.iperform.common.dto.request.AuthRequest;
-import com.platform.iperform.common.dto.response.AuthResponse;
-import com.platform.iperform.common.dto.response.JwtResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
-import com.platform.iperform.model.Permission;
 import com.platform.iperform.security.jwt.JwtUtils;
 import com.platform.iperform.security.services.UserDetailsImpl;
+import com.platform.iperform.service.MailService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,11 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/api/auth")
@@ -36,11 +29,13 @@ public class AuthController {
     private final FunctionHelper functionHelper;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
+    private final MailService mailService;
 
-    public AuthController(FunctionHelper functionHelper, JwtUtils jwtUtils, AuthenticationManager authenticationManager) {
+    public AuthController(FunctionHelper functionHelper, JwtUtils jwtUtils, AuthenticationManager authenticationManager, MailService mailService) {
         this.functionHelper = functionHelper;
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
+        this.mailService = mailService;
     }
 
     @PostMapping(value = "/login")
@@ -83,10 +78,7 @@ public class AuthController {
     }
     @GetMapping(value = "/fake")
     public ResponseEntity<String> fakeAuthGG() {
-       boolean x = functionHelper.checkPermissionHrm(
-               UUID.fromString("786acdc6-8a6b-4a93-9d21-286cfd65e4fa"),
-               UUID.fromString("53bf6a4f-e0be-4e60-8382-3e75d0664a84")
-       );
+       mailService.sendEmail();
         return ResponseEntity
                 .ok()
 //                .headers(responseHeaders)

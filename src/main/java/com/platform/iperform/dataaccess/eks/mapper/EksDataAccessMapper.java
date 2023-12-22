@@ -206,7 +206,7 @@ public class EksDataAccessMapper {
                 .createdAt(checkIn.getCreatedAt())
                 .content(checkIn.getContent())
                 .build();
-        if(checkInEntity.getId() == null) {
+        if(checkIn.getId() == null) {
             checkInEntity.setId(UUID.randomUUID());
             checkInEntity.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
             checkInEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));

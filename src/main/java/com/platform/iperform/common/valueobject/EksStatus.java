@@ -1,5 +1,5 @@
 package com.platform.iperform.common.valueobject;
 
 public enum EksStatus {
-    ACHIEVED, COMPLETE, ACTIVE, INACTIVE, DRAFT
+   ARCHIVED, COMPLETED, ACTIVE, INACTIVE, DRAFT
 }

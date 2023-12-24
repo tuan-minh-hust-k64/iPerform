@@ -28,8 +28,8 @@ DROP TABLE IF EXISTS "iperform".check_point_item CASCADE;
 DROP TABLE IF EXISTS "iperform".check_in CASCADE;
 DROP TABLE IF EXISTS "iperform".comment CASCADE;
 DROP TABLE IF EXISTS "iperform".collaboration_feedback CASCADE;
---DROP TABLE IF EXISTS "iperform".question CASCADE;
---DROP TABLE IF EXISTS "iperform".config CASCADE;
+DROP TABLE IF EXISTS "iperform".question CASCADE;
+DROP TABLE IF EXISTS "iperform".config CASCADE;
 
 
 

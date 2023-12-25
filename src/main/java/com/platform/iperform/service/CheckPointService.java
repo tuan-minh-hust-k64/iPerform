@@ -46,12 +46,14 @@ public class CheckPointService {
     }
     @Transactional(readOnly = true)
     public CheckPointResponse findByUserIdAndTitle(CheckPointRequest checkPointRequest) {
-        CheckPointEntity result = checkPointRepository.findByUserIdAndTitle(checkPointRequest.getUserId(), checkPointRequest.getTitle())
-                .orElse(CheckPointEntity.builder()
+        List<CheckPointEntity> result = checkPointRepository.findByUserIdAndTitle(checkPointRequest.getUserId(), checkPointRequest.getTitle())
+                .orElse(List.of(CheckPointEntity.builder()
                         .status(CheckPointStatus.INIT)
-                        .build());
+                        .build()));
         return CheckPointResponse.builder()
-                .data(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result))
+                .data(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result.size() == 0? CheckPointEntity.builder()
+                        .status(CheckPointStatus.INIT)
+                        .build(): result.get(0)))
                 .build();
     }
     @Transactional

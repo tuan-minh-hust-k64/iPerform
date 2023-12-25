@@ -2,8 +2,11 @@ package com.platform.iperform.controller;
 
 import com.platform.iperform.common.dto.request.CheckPointRequest;
 import com.platform.iperform.common.dto.response.CheckPointResponse;
+import com.platform.iperform.common.dto.response.CollaborationFeedbackResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.FeedbackStatus;
 import com.platform.iperform.service.CheckPointService;
+import com.platform.iperform.service.CollaborationFeedbackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,10 +25,12 @@ import java.util.stream.Collectors;
 public class StatisticController {
     private final FunctionHelper functionHelper;
     private final CheckPointService checkPointService;
+    private final CollaborationFeedbackService collaborationFeedbackService;
 
-    public StatisticController(FunctionHelper functionHelper, CheckPointService checkPointService) {
+    public StatisticController(FunctionHelper functionHelper, CheckPointService checkPointService, CollaborationFeedbackService collaborationFeedbackService) {
         this.functionHelper = functionHelper;
         this.checkPointService = checkPointService;
+        this.collaborationFeedbackService = collaborationFeedbackService;
     }
 
     @GetMapping(value = "/my-team")
@@ -37,7 +42,9 @@ public class StatisticController {
                         .userId(UUID.fromString(item.get("id").toString()))
                                 .title(title)
                         .build());
+                CollaborationFeedbackResponse statisticFeedback = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(UUID.fromString(item.get("id").toString()), title, FeedbackStatus.INIT);
                 item.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
+                item.put("feedBackStatus", statisticFeedback.getCollaborationFeedbacks().isEmpty());
             });
             return ResponseEntity.ok(result);
 

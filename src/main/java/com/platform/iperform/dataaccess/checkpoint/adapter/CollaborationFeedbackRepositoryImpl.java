@@ -32,7 +32,7 @@ public class CollaborationFeedbackRepositoryImpl {
         return collaborationFeedbackJpaRepository.findById(id);
     }
 
-    public List<CollaborationFeedbackEntity> getCollaborationByTargetIdIdAndTimePeriod(UUID targetId, String timePeriod) {
-        return collaborationFeedbackJpaRepository.findByTargetIdAndTimePeriodAndStatusNot(targetId, timePeriod, FeedbackStatus.DELETED);
+    public List<CollaborationFeedbackEntity> getCollaborationByTargetIdIdAndTimePeriod(UUID targetId, String timePeriod, FeedbackStatus... feedbackStatuses) {
+        return collaborationFeedbackJpaRepository.findByTargetIdAndTimePeriodAndStatusIn(targetId, timePeriod, feedbackStatuses);
     }
 }

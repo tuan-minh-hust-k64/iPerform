@@ -122,6 +122,7 @@ public class CheckPointDataAccessMapper {
                 .reviewerId(collaborationFeedbackEntity.getReviewerId())
                 .createdAt(collaborationFeedbackEntity.getCreatedAt())
                 .id(collaborationFeedbackEntity.getId())
+                .status(collaborationFeedbackEntity.getStatus())
                 .lastUpdateAt(collaborationFeedbackEntity.getLastUpdateAt())
                 .build();
     }

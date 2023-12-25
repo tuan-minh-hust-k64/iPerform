@@ -4,6 +4,7 @@ import com.platform.iperform.common.dto.request.CollaborationFeedbackRequest;
 import com.platform.iperform.common.dto.response.CollaborationFeedbackResponse;
 import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.FeedbackStatus;
 import com.platform.iperform.service.CollaborationFeedbackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +59,10 @@ public class CollaborationFeedbackController {
         if(functionHelper.checkPermissionHrm(UUID.fromString(userId), collaborationFeedbackRequest.getTargetId())) {
             CollaborationFeedbackResponse result = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(
                     collaborationFeedbackRequest.getTargetId(),
-                    collaborationFeedbackRequest.getTimePeriod());
+                    collaborationFeedbackRequest.getTimePeriod(),
+                    FeedbackStatus.COMPLETED,
+                    FeedbackStatus.INIT
+                    );
             return ResponseEntity.ok(result);
         } else {
             throw new AuthenticateException("You are not permission!");

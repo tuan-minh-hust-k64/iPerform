@@ -9,6 +9,7 @@ import com.platform.iperform.dataaccess.checkpoint.adapter.CollaborationFeedback
 import com.platform.iperform.dataaccess.checkpoint.entity.CollaborationFeedbackEntity;
 import com.platform.iperform.dataaccess.checkpoint.mapper.CheckPointDataAccessMapper;
 import com.platform.iperform.model.CollaborationFeedback;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class CollaborationFeedbackService {
     private final CollaborationFeedbackRepositoryImpl collaborationFeedbackRepository;
     private final CheckPointDataAccessMapper checkPointDataAccessMapper;
@@ -60,6 +62,7 @@ public class CollaborationFeedbackService {
                 collaborationFeedbackEntity,
                 functionHelper.getNullPropertyNames(collaborationFeedbackRequest.getCollaborationFeedback())
         );
+        log.info("QUYEN: {}", collaborationFeedbackEntity.getStatus());
         CollaborationFeedbackEntity result = collaborationFeedbackRepository.save(collaborationFeedbackEntity);
         return CollaborationFeedbackResponse.builder()
                 .data(checkPointDataAccessMapper.collaborationFeedbackEntityToCollaborationFeedback(result))
@@ -85,8 +88,8 @@ public class CollaborationFeedbackService {
                 .build();
     }
 
-    public CollaborationFeedbackResponse getCollaborationByTargetIdIdAndTimePeriod(UUID targetId, String timePeriod) {
-        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByTargetIdIdAndTimePeriod(targetId, timePeriod)
+    public CollaborationFeedbackResponse getCollaborationByTargetIdIdAndTimePeriod(UUID targetId, String timePeriod, FeedbackStatus... feedbackStatuses) {
+        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByTargetIdIdAndTimePeriod(targetId, timePeriod, feedbackStatuses)
                 .stream().map(checkPointDataAccessMapper::collaborationFeedbackEntityToCollaborationFeedback).toList();
         return CollaborationFeedbackResponse.builder()
                 .collaborationFeedbacks(result)

@@ -83,7 +83,7 @@ public class CollaborationFeedbackController {
     public ResponseEntity<CollaborationFeedbackResponse> getCollaborationFeedbackById(@PathVariable UUID id) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         CollaborationFeedbackResponse result = collaborationFeedbackService.findById(id);
-        if(functionHelper.checkPermissionHrm(UUID.fromString(userId), result.getData().getTargetId())) {
+        if(functionHelper.checkPermissionHrm(UUID.fromString(userId), result.getData().getReviewerId()) || functionHelper.checkPermissionHrm(UUID.fromString(userId), result.getData().getTargetId())) {
             return ResponseEntity.ok(result);
         } else {
             throw new AuthenticateException("You are not permission!");

@@ -10,6 +10,7 @@ DROP TYPE IF EXISTS check_in_status;
 DROP TYPE IF EXISTS question_status;
 DROP TYPE IF EXISTS check_point_status;
 DROP TYPE IF EXISTS collaboration_feedback_status;
+DROP TYPE IF EXISTS ranking_type;
 
 
 CREATE TYPE expectation_type as ENUM ('GROW_YOURSELF', 'GROW_YOUR_TEAM', 'GROW_YOUR_COMPANY');
@@ -20,6 +21,7 @@ CREATE TYPE check_in_status as ENUM ('PENDING', 'COMPLETED', 'ATTACK', 'RISK', '
 CREATE TYPE question_status as ENUM ('DISABLE', 'ENABLE');
 CREATE TYPE check_point_status as ENUM ('INIT', 'COMPLETED', 'PENDING', 'FINISHED');
 CREATE TYPE collaboration_feedback_status as ENUM ('INIT', 'COMPLETED', 'DELETED');
+CREATE TYPE ranking_type as ENUM ('BELOW_EXPECTATIONS', 'NEAR_EXPECTATIONS_NEEDS_IMPROVEMENT', 'MEETS_EXPECTATIONS', 'EXCEEDS_EXPECTATIONS', 'OUTSTANDING');
 
 DROP TABLE IF EXISTS "iperform".key_step CASCADE;
 DROP TABLE IF EXISTS "iperform".expectation CASCADE;

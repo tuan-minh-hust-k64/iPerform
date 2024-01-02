@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 public class QuestionRequest {
     private final List<Question> questions;
+    private final Question question;
     private String message;
     private QuestionStatus status;
 }

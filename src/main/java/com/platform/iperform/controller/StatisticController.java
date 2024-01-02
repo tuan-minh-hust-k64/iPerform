@@ -5,6 +5,8 @@ import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.dto.response.CollaborationFeedbackResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.common.valueobject.FeedbackStatus;
+import com.platform.iperform.model.CheckPoint;
+import com.platform.iperform.model.CollaborationFeedback;
 import com.platform.iperform.service.CheckPointService;
 import com.platform.iperform.service.CollaborationFeedbackService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +46,8 @@ public class StatisticController {
                         .build());
                 CollaborationFeedbackResponse statisticFeedback = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(UUID.fromString(item.get("id").toString()), title, FeedbackStatus.INIT);
                 item.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
+                item.put("checkPointId", statisticCheckPoint.getData().getId());
+                item.put("ranking", statisticCheckPoint.getData().getRanking());
                 item.put("feedBackStatus", statisticFeedback.getCollaborationFeedbacks().isEmpty());
             });
             return ResponseEntity.ok(result);
@@ -54,13 +58,13 @@ public class StatisticController {
         }
     }
     @GetMapping(value = "/check-point")
-    ResponseEntity<?> statisticCheckPoint() {
+    ResponseEntity<?> statisticCheckPoint(@RequestParam(required = false) String timePeriod) {
         try {
             List<Map<String, Object>> result = functionHelper.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
             List<Map<String, Object>> data = result.stream().map(item -> {
                 CheckPointResponse statisticCheckPoint = checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
                         .userId(UUID.fromString(item.get("id").toString()))
-                        .title(functionHelper.calculateQuarter())
+                        .title(timePeriod == null ? functionHelper.calculateQuarter():timePeriod)
                         .build());
                 Map<String, Object> tempRep = (Map<String, Object>) item.get("teams");
                 Map<String, Object> temp = new HashMap<>();
@@ -80,5 +84,19 @@ public class StatisticController {
             log.error("Get Info Team By Manager Id Failure: {}", e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+    @GetMapping(value = "/get-by-user-id")
+    public ResponseEntity<?> getStatisticByUserId(@RequestParam String userId, @RequestParam String timePeriod) {
+        List<CheckPoint> dataCheckPoint = checkPointService.getCheckPointByUserId(CheckPointRequest.builder()
+                .userId(UUID.fromString(userId))
+                .build()).getCheckPoint().stream().filter(item -> item.getTitle().equals(timePeriod)).toList();
+
+        List<CollaborationFeedback> dataFeedBack = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(
+                UUID.fromString(userId), timePeriod, FeedbackStatus.INIT, FeedbackStatus.COMPLETED
+        ).getCollaborationFeedbacks();
+        Map<String, Object> data = new HashMap<>();
+        data.put("checkPoints", dataCheckPoint);
+        data.put("feedback", dataFeedBack);
+        return ResponseEntity.ok(data);
     }
 }

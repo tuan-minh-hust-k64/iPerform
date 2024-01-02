@@ -44,6 +44,13 @@ public class CommentService {
                 .build();
     }
     @Transactional
+    public CommentResponse createFeedback(CommentRequest commentRequest) {
+        List<Comment> result = commentRepository.saveAll(commentRequest.getComments());
+        return CommentResponse.builder()
+                .comment(result)
+                .build();
+    }
+    @Transactional
     public CommentResponse updateCommentByUserId(CommentRequest commentRequest, UUID userId) {
         CommentEntity commentEntity = commentRepository.findByIdAndUserId(commentRequest.getComment().getId(), userId)
                 .orElseThrow(() -> new NotFoundException("Not Found Comment with id: " + commentRequest.getComment().getId()));

@@ -35,6 +35,11 @@ public class CommentRepositoryImpl {
                 commentJpaRepository.save(eksDataAccessMapper.commentToCommentEntity(comment))
         );
     }
+    public List<Comment> saveAll(List<Comment> comments) {
+        return eksDataAccessMapper.commentEntitiesToComments(
+                commentJpaRepository.saveAll(eksDataAccessMapper.commentsToCommentEntities(comments))
+        );
+    }
     public Optional<CommentEntity> findById(UUID id) {
         return commentJpaRepository.findById(id);
     }

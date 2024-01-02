@@ -2,6 +2,7 @@ package com.platform.iperform.dataaccess.checkpoint.entity;
 
 import com.platform.iperform.common.valueobject.BaseEntityAllowComment;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
+import com.platform.iperform.common.valueobject.RankingType;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
 import com.platform.iperform.model.Comment;
 import jakarta.persistence.*;
@@ -26,6 +27,8 @@ public class CheckPointEntity extends BaseEntityAllowComment{
     @Enumerated(EnumType.STRING)
     private CheckPointStatus status;
     private ZonedDateTime lastUpdateAt;
+    @Enumerated(EnumType.STRING)
+    private RankingType ranking;
 
 //    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
 //    private List<CommentEntity> commentEntities;

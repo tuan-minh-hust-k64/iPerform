@@ -31,7 +31,7 @@ public class CommentEntity {
 //    @ManyToOne(cascade = CascadeType.ALL)
 //    private BaseEntityAllowComment parent;
     @JoinColumn(name = "question_id")
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     private QuestionEntity question;
     private ZonedDateTime createdAt;
     @Enumerated(EnumType.STRING)

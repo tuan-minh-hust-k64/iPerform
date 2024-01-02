@@ -15,7 +15,9 @@ import com.platform.iperform.model.CheckIn;
 import com.platform.iperform.model.Comment;
 import com.platform.iperform.model.Eks;
 import com.platform.iperform.model.KeyStep;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class EksService {
     private final EksRepositoryImpl eksRepository;
     private final EksDataAccessMapper eksDataAccessMapper;
@@ -34,7 +37,6 @@ public class EksService {
 
     private final CheckInRepositoryImpl checkInRepository;
     private final CommentRepositoryImpl commentRepository;
-
 
     public EksService(EksRepositoryImpl eksRepository,
                       EksDataAccessMapper eksDataAccessMapper, CommentRepositoryImpl commentRepository,

@@ -158,12 +158,23 @@ public class EksDataAccessMapper {
             CommentEntity commentEntity = CommentEntity.builder()
                     .type(comment.getType())
                     .userId(comment.getUserId())
+                    .name(comment.getName())
+                    .parentId(comment.getParentId())
+                    .status(comment.getStatus())
                     .content(comment.getContent())
                     .lastUpdateAt(comment.getLastUpdateAt())
                     .createdAt(comment.getCreatedAt())
                     .build();
-            if(comment.getId() == null) commentEntity.setId(UUID.randomUUID());
+            if(comment.getId() == null) {
+                log.info(comment.getQuestionId().toString());
+                commentEntity.setId(UUID.randomUUID());
+                commentEntity.setQuestion(new QuestionEntity(comment.getQuestionId()));
+                commentEntity.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
+                commentEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
+            }
             else commentEntity.setId(comment.getId());
+            log.info(commentEntity.toString());
+
             return commentEntity;
         }).toList();
     }

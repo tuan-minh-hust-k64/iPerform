@@ -54,19 +54,33 @@ public class CheckPointController {
 
     }
     @GetMapping
-    public ResponseEntity<CheckPointResponse> getCheckPointByUserId(@RequestParam UUID userId) {
+    public ResponseEntity<CheckPointResponse> getCheckPointByUserId(@RequestParam UUID userId, @RequestParam String timePeriod) {
         CheckPointResponse result = checkPointService.getCheckPointByUserId(CheckPointRequest.builder()
                 .userId(functionHelper.authorizationMiddleware(
                         UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName()),
                         userId
                 ))
                 .build());
-        return ResponseEntity.ok(result);
+        if(timePeriod.equals("all")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.ok(CheckPointResponse.builder()
+                            .checkPoint(result.getCheckPoint().stream().filter(item -> item.getTitle().equals(timePeriod)).toList())
+                    .build());
+        }
+
     }
     @PostMapping
     public ResponseEntity<CheckPointResponse> createCheckPoint(@RequestBody CheckPointRequest checkPointRequest) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         checkPointRequest.getCheckPoint().setUserId(UUID.fromString(userId));
+        CheckPointResponse checkExist = checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
+                .userId(UUID.fromString(userId))
+                .title(functionHelper.calculateQuarter())
+                .build());
+        if(checkExist.getData().getId() != null) {
+            throw new RuntimeException("Check point is already exist!!!");
+        }
         CheckPointResponse result = checkPointService.createCheckPoint(checkPointRequest);
         return ResponseEntity.ok(result);
     }

@@ -35,6 +35,15 @@ public class CommentController {
         CommentResponse result = commentService.createComment(commentRequest);
         return ResponseEntity.ok(result);
     }
+    @PostMapping(value = "/create-many")
+    public ResponseEntity<CommentResponse> createFeedback(@RequestBody CommentRequest commentRequest) {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        commentRequest.getComments().forEach(item -> {
+            item.setUserId(UUID.fromString(userId));
+        });
+        CommentResponse result = commentService.createFeedback(commentRequest);
+        return ResponseEntity.ok(result);
+    }
     @PutMapping
     public ResponseEntity<CommentResponse> updateComment(@RequestBody CommentRequest commentRequest) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();

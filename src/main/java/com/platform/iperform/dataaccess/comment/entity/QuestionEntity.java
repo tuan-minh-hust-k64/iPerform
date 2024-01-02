@@ -23,7 +23,7 @@ public class QuestionEntity {
     private QuestionStatus status;
     private ZonedDateTime createdAt;
     private ZonedDateTime lastUpdateAt;
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question")
     private List<CommentEntity> commentEntities;
     public QuestionEntity(UUID id) {
         this.id = id;

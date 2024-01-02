@@ -33,13 +33,13 @@ public class QuestionService {
                 .build();
     }
     public QuestionResponse updateQuestion(QuestionRequest questionRequest) {
-        QuestionEntity questionEntity = questionRepository.findById(questionRequest.getQuestions().get(0).getId())
-                .orElseThrow(() -> new NotFoundException("Not found question with id: " + questionRequest.getQuestions().get(0).getId()));
+        QuestionEntity questionEntity = questionRepository.findById(questionRequest.getQuestion().getId())
+                .orElseThrow(() -> new NotFoundException("Not found question with id: " + questionRequest.getQuestion().getId()));
         questionEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
-                questionRequest.getQuestions().get(0),
+                questionRequest.getQuestion(),
                 questionEntity,
-                functionHelper.getNullPropertyNames(questionRequest.getQuestions().get(0).getId())
+                functionHelper.getNullPropertyNames(questionRequest.getQuestion())
         );
         Question result = questionDataMapper.questionEntityToQuestion(
                 questionRepository.save(questionDataMapper.questionEntityToQuestion(questionEntity))

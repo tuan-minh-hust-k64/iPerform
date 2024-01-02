@@ -1,6 +1,7 @@
 package com.platform.iperform.model;
 
 import com.platform.iperform.common.valueobject.CheckPointStatus;
+import com.platform.iperform.common.valueobject.RankingType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class CheckPoint {
     private String title;
     private CheckPointStatus status;
     private ZonedDateTime lastUpdateAt;
+    private RankingType ranking;
 
     private List<Comment> comments;
     private final List<CheckPointItem> checkPointItems;

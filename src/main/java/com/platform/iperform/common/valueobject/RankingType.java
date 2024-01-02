@@ -1,0 +1,5 @@
+package com.platform.iperform.common.valueobject;
+
+public enum RankingType {
+    BELOW_EXPECTATIONS, NEAR_EXPECTATIONS_NEEDS_IMPROVEMENT, MEETS_EXPECTATIONS, EXCEEDS_EXPECTATIONS, OUTSTANDING
+}

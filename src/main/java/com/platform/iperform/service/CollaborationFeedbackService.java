@@ -62,7 +62,6 @@ public class CollaborationFeedbackService {
                 collaborationFeedbackEntity,
                 functionHelper.getNullPropertyNames(collaborationFeedbackRequest.getCollaborationFeedback())
         );
-        log.info("QUYEN: {}", collaborationFeedbackEntity.getStatus());
         CollaborationFeedbackEntity result = collaborationFeedbackRepository.save(collaborationFeedbackEntity);
         return CollaborationFeedbackResponse.builder()
                 .data(checkPointDataAccessMapper.collaborationFeedbackEntityToCollaborationFeedback(result))

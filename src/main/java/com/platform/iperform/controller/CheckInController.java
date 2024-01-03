@@ -52,13 +52,9 @@ public class CheckInController {
         return ResponseEntity.ok(result);
     }
     @PostMapping(value = "/request-check-in")
-    public ResponseEntity<String> requestCheckIn(@RequestBody String eksId) {
+    public ResponseEntity<String> requestCheckIn() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        eksService.updateEksByIdAndUserId(EksRequest.builder()
-                        .data(Eks.builder()
-                                .id(UUID.fromString(eksId))
-                                .build())
-                .build(), UUID.fromString(userId));
+
         try {
             Map<String, Object> managers = functionHelper.getManagerInfo(userId);
             String fromName = (String) managers.get("name");

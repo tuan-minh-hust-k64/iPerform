@@ -1,12 +1,15 @@
 package com.platform.iperform.service;
 
+import com.platform.iperform.common.dto.request.CheckInRequest;
 import com.platform.iperform.common.dto.request.CommentRequest;
 import com.platform.iperform.common.dto.response.CommentResponse;
 import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.CheckInStatus;
 import com.platform.iperform.dataaccess.comment.adapter.CommentRepositoryImpl;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
+import com.platform.iperform.model.CheckIn;
 import com.platform.iperform.model.Comment;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -22,11 +25,13 @@ public class CommentService {
     private final EksDataAccessMapper eksDataAccessMapper;
     private final CommentRepositoryImpl commentRepository;
     private final FunctionHelper functionHelper;
+    private final CheckInService checkInService;
 
-    public CommentService(EksDataAccessMapper eksDataAccessMapper, CommentRepositoryImpl commentRepository, FunctionHelper functionHelper) {
+    public CommentService(EksDataAccessMapper eksDataAccessMapper, CommentRepositoryImpl commentRepository, FunctionHelper functionHelper, CheckInService checkInService) {
         this.eksDataAccessMapper = eksDataAccessMapper;
         this.commentRepository = commentRepository;
         this.functionHelper = functionHelper;
+        this.checkInService = checkInService;
     }
     @Transactional(readOnly = true)
     public CommentResponse getCommentByParentId(CommentRequest commentRequest) {
@@ -46,6 +51,13 @@ public class CommentService {
     @Transactional
     public CommentResponse createFeedback(CommentRequest commentRequest) {
         List<Comment> result = commentRepository.saveAll(commentRequest.getComments());
+        checkInService.updateCheckIn(CheckInRequest.builder()
+                        .checkIn(CheckIn.builder()
+                                .status(CheckInStatus.COMPLETED)
+                                .lastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")))
+                                .id(commentRequest.getComments().get(0).getParentId())
+                                .build())
+                .build());
         return CommentResponse.builder()
                 .comment(result)
                 .build();

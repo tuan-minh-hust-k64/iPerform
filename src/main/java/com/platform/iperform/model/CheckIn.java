@@ -1,5 +1,6 @@
 package com.platform.iperform.model;
 
+import com.platform.iperform.common.valueobject.CheckInProgress;
 import com.platform.iperform.common.valueobject.CheckInStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +21,9 @@ public class CheckIn {
     private final ZonedDateTime createdAt;
     private String content;
     private CheckInStatus status;
+    private CheckInProgress progress;
     private String type;
     private ZonedDateTime lastUpdateAt;
-
     private final List<Comment> comments;
 
     @Override

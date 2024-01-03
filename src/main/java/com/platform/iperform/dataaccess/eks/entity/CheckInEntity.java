@@ -1,6 +1,7 @@
 package com.platform.iperform.dataaccess.eks.entity;
 
 import com.platform.iperform.common.valueobject.BaseEntityAllowComment;
+import com.platform.iperform.common.valueobject.CheckInProgress;
 import com.platform.iperform.common.valueobject.CheckInStatus;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
 import jakarta.persistence.*;
@@ -24,6 +25,8 @@ public class CheckInEntity extends BaseEntityAllowComment {
     private ZonedDateTime createdAt;
     private String content;
     @Enumerated(EnumType.STRING)
+    private CheckInProgress progress;
+    @Enumerated(EnumType.STRING)
     private CheckInStatus status;
     private String type;
     private ZonedDateTime lastUpdateAt;
@@ -36,7 +39,7 @@ public class CheckInEntity extends BaseEntityAllowComment {
         return "CheckInEntity{" +
                 "createdAt=" + createdAt +
                 ", content='" + content + '\'' +
-                ", status=" + status +
+                ", progress=" + progress +
                 ", type='" + type + '\'' +
                 ", lastUpdateAt=" + lastUpdateAt +
                 '}';

@@ -2,6 +2,7 @@ package com.platform.iperform.dataaccess.eks.mapper;
 
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.common.valueobject.BaseEntityAllowComment;
+import com.platform.iperform.common.valueobject.CheckInStatus;
 import com.platform.iperform.common.valueobject.CommentStatus;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
 import com.platform.iperform.dataaccess.comment.entity.QuestionEntity;
@@ -61,6 +62,7 @@ public class EksDataAccessMapper {
                 .content(item.getContent())
                 .createdAt(item.getCreatedAt())
                 .lastUpdateAt(item.getLastUpdateAt())
+                .progress(item.getProgress())
 //                .comments(commentEntitiesToComments(item.getCommentEntities()))
                 .build()).toList();
     }
@@ -216,9 +218,11 @@ public class EksDataAccessMapper {
                 .lastUpdateAt(checkIn.getLastUpdateAt())
                 .createdAt(checkIn.getCreatedAt())
                 .content(checkIn.getContent())
+                .progress(checkIn.getProgress())
                 .build();
         if(checkIn.getId() == null) {
             checkInEntity.setId(UUID.randomUUID());
+            checkInEntity.setStatus(CheckInStatus.INIT);
             checkInEntity.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
             checkInEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         } else {

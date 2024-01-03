@@ -27,7 +27,7 @@ public class Eks {
 
     private List<KeyStep> keySteps;
     private List<Comment> comments;
-    private final List<CheckIn> checkIns;
+    private List<CheckIn> checkIns;
 
 //    public void initEks()
 

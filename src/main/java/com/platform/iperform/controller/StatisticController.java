@@ -3,12 +3,15 @@ package com.platform.iperform.controller;
 import com.platform.iperform.common.dto.request.CheckPointRequest;
 import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.dto.response.CollaborationFeedbackResponse;
+import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.CheckInStatus;
 import com.platform.iperform.common.valueobject.FeedbackStatus;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.model.CollaborationFeedback;
 import com.platform.iperform.service.CheckPointService;
 import com.platform.iperform.service.CollaborationFeedbackService;
+import com.platform.iperform.service.EksService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -28,11 +32,16 @@ public class StatisticController {
     private final FunctionHelper functionHelper;
     private final CheckPointService checkPointService;
     private final CollaborationFeedbackService collaborationFeedbackService;
+    private final EksService eksService;
 
-    public StatisticController(FunctionHelper functionHelper, CheckPointService checkPointService, CollaborationFeedbackService collaborationFeedbackService) {
+    public StatisticController(FunctionHelper functionHelper,
+                               CheckPointService checkPointService,
+                               CollaborationFeedbackService collaborationFeedbackService,
+                               EksService eksService) {
         this.functionHelper = functionHelper;
         this.checkPointService = checkPointService;
         this.collaborationFeedbackService = collaborationFeedbackService;
+        this.eksService = eksService;
     }
 
     @GetMapping(value = "/my-team")
@@ -40,6 +49,18 @@ public class StatisticController {
         try {
             List<Map<String, Object>> result = functionHelper.getTeamByManagerId(managerId);
             result.forEach(item -> {
+                EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.get("id").toString()), title);
+                AtomicReference<String> checkInStatus = new AtomicReference<>("COMPLETED");
+                for(int i = 0; i<statisticEks.getEks().size(); i++) {
+                    if(!statisticEks.getEks().get(i).getCheckIns().stream().filter(temp -> temp.getStatus().equals(CheckInStatus.INIT)).toList().isEmpty()) {
+                        checkInStatus.set("INIT");
+                        break;
+                    }
+                    if(!statisticEks.getEks().get(i).getCheckIns().stream().filter(temp -> temp.getStatus().equals(CheckInStatus.PENDING)).toList().isEmpty()) {
+                        checkInStatus.set("PENDING");
+                        break;
+                    }
+                }
                 CheckPointResponse statisticCheckPoint = checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
                         .userId(UUID.fromString(item.get("id").toString()))
                                 .title(title)
@@ -49,6 +70,7 @@ public class StatisticController {
                 item.put("checkPointId", statisticCheckPoint.getData().getId());
                 item.put("ranking", statisticCheckPoint.getData().getRanking());
                 item.put("feedBackStatus", statisticFeedback.getCollaborationFeedbacks().isEmpty());
+                item.put("checkInStatus", checkInStatus);
             });
             return ResponseEntity.ok(result);
 
@@ -86,10 +108,10 @@ public class StatisticController {
         }
     }
     @GetMapping(value = "/get-by-user-id")
-    public ResponseEntity<?> getStatisticByUserId(@RequestParam String userId, @RequestParam String timePeriod) {
+    public ResponseEntity<?> getStatisticByUserId(@RequestParam String userId, @RequestParam(required = false) String timePeriod) {
         List<CheckPoint> dataCheckPoint = checkPointService.getCheckPointByUserId(CheckPointRequest.builder()
                 .userId(UUID.fromString(userId))
-                .build()).getCheckPoint().stream().filter(item -> item.getTitle().equals(timePeriod)).toList();
+                .build()).getCheckPoint().stream().filter(item -> item.getTitle().equals(timePeriod == null? functionHelper.calculateQuarter():timePeriod)).toList();
 
         List<CollaborationFeedback> dataFeedBack = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(
                 UUID.fromString(userId), timePeriod, FeedbackStatus.INIT, FeedbackStatus.COMPLETED

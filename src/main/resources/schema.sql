@@ -17,7 +17,8 @@ CREATE TYPE expectation_type as ENUM ('GROW_YOURSELF', 'GROW_YOUR_TEAM', 'GROW_Y
 CREATE TYPE eks_status as ENUM ('ARCHIVED', 'COMPLETED', 'ACTIVE', 'INACTIVE', 'DRAFT');
 CREATE TYPE comment_status as ENUM ('DELETED', 'INIT');
 CREATE TYPE comment_type as ENUM ('COMMENT', 'FEEDBACK');
-CREATE TYPE check_in_status as ENUM ('PENDING', 'COMPLETED', 'ATTACK', 'RISK', 'ON_TRACK', 'OFF_TRACK', 'ACHIEVED', 'PARTIAL', 'MISSED', 'DROPPED', 'CHALLENGING');
+CREATE TYPE check_in_progress as ENUM ('PENDING', 'COMPLETED', 'ATTACK', 'RISK', 'ON_TRACK', 'OFF_TRACK', 'ACHIEVED', 'PARTIAL', 'MISSED', 'DROPPED', 'CHALLENGING');
+CREATE TYPE check_in_status as ENUM ('INIT', 'PENDING', 'COMPLETED');
 CREATE TYPE question_status as ENUM ('DISABLE', 'ENABLE');
 CREATE TYPE check_point_status as ENUM ('INIT', 'COMPLETED', 'PENDING', 'FINISHED');
 CREATE TYPE collaboration_feedback_status as ENUM ('INIT', 'COMPLETED', 'DELETED');
@@ -95,6 +96,7 @@ CREATE TABLE "iperform".check_in
     e_id uuid NOT NULL,
     content character varying COLLATE pg_catalog."default" NOT NULL,
     status check_in_status NOT NULL,
+    progress check_in_progress NOT NULL,
     type character varying COLLATE pg_catalog."default",
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     last_update_at TIMESTAMP WITH TIME ZONE NOT NULL,

@@ -36,13 +36,13 @@ public class CheckInService {
     }
     @Transactional
     public CheckInResponse updateCheckIn(CheckInRequest checkInRequest) {
-        CheckInEntity checkInEntity = checkInRepository.findById(checkInRequest.getCheckIns().get(0).getId())
-                .orElseThrow(() -> new NotFoundException("Not Found CheckIn with id: " + checkInRequest.getCheckIns().get(0).getId()));
+        CheckInEntity checkInEntity = checkInRepository.findById(checkInRequest.getCheckIn().getId())
+                .orElseThrow(() -> new NotFoundException("Not Found CheckIn with id: " + checkInRequest.getCheckIn().getId()));
         checkInEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         BeanUtils.copyProperties(
-                checkInRequest.getCheckIns().get(0),
+                checkInRequest.getCheckIn(),
                 checkInEntity,
-                functionHelper.getNullPropertyNames(checkInRequest.getCheckIns().get(0))
+                functionHelper.getNullPropertyNames(checkInRequest.getCheckIn())
         );
         CheckInEntity result = checkInRepository.save(checkInEntity);
         return CheckInResponse.builder()

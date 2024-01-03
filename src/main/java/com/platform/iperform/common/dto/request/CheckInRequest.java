@@ -13,4 +13,5 @@ public class CheckInRequest {
     private final UUID id;
     private final List<CheckIn> checkIns;
     private final String from;
+    private final CheckIn checkIn;
 }

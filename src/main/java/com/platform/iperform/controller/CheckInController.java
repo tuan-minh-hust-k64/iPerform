@@ -1,16 +1,14 @@
 package com.platform.iperform.controller;
 
 import com.platform.iperform.common.dto.request.CheckInRequest;
-import com.platform.iperform.common.dto.request.EksRequest;
 import com.platform.iperform.common.dto.response.CheckInResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
-import com.platform.iperform.model.Eks;
 import com.platform.iperform.service.CheckInService;
 import com.platform.iperform.service.EksService;
+import com.platform.iperform.service.SlackService;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,21 +19,23 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 
 @Controller
 @CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
 @RequestMapping(value = "/api/check-in")
 public class CheckInController {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final SlackService slackService;
     private final CheckInService checkInService;
     private final EksService eksService;
     private final FunctionHelper functionHelper;
 
-    public CheckInController(JavaMailSender mailSender, CheckInService checkInService, EksService eksService, FunctionHelper functionHelper) {
-        this.mailSender = mailSender;
+    public CheckInController(JavaMailSender mailSender,
+                             SlackService slackService,
+                             CheckInService checkInService,
+                             EksService eksService,
+                             FunctionHelper functionHelper) {
+        this.slackService = slackService;
         this.checkInService = checkInService;
         this.eksService = eksService;
         this.functionHelper = functionHelper;
@@ -73,8 +73,17 @@ public class CheckInController {
                     });
             List<Map<String, String>> managerInfo= (List<Map<String, String>>) managers.get("managers");
             for (Map<String, String> item : managerInfo) {
+                slackService.sendMessageDM(
+                        item.get("email"),
+                        "Subject: [iPerform] Bạn nhận được đề xuất Check-In từ *" + fromName + "*\n" +
+                                "Dear Manager,\n" +
+                                "Team member *" + fromName + "* đã hoàn thành phần check-in nháp và gửi đề xuất ngồi 1:1 với bạn.\n" +
+                                "Bạn có thể review phần check-in nháp tại <https://iperform.ikameglobal.com/#/check-in|*ĐÂY*> và hãy sớm sắp xếp lịch ngồi 1:1 nhé!\n" +
+                                "Vui lòng liên hệ đội ngũ phát triển iPerform nếu không truy cập được link trên!"
+                );
                 MimeMessage message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(fromEmail));
+                message.setFrom("Iperform");
+//                message.setFrom(new InternetAddress(fromEmail));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(item.get("email")));
                 message.setSubject("[iKame-iPerform] Thông báo có request check-in từ " + fromName);
                 message.setContent(

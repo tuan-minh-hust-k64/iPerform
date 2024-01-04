@@ -44,7 +44,7 @@ public class CollaborationFeedbackController {
     public ResponseEntity<CollaborationFeedbackResponse> getCollaborationFeedbackByReviewerId(@RequestParam UUID reviewerId, @RequestParam String timePeriod) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         if(functionHelper.checkPermissionHrm(UUID.fromString(userId), reviewerId)) {
-            CollaborationFeedbackResponse result = collaborationFeedbackService.getCollaborationByReviewerIdAndTimePeriod(reviewerId, timePeriod);
+            CollaborationFeedbackResponse result = collaborationFeedbackService.getCollaborationByReviewerIdAndTimePeriod(reviewerId, timePeriod, FeedbackStatus.COMPLETED, FeedbackStatus.INIT);
             return ResponseEntity.ok(result);
         } else {
             throw new AuthenticateException("You are not permission!");
@@ -57,7 +57,7 @@ public class CollaborationFeedbackController {
     public ResponseEntity<CollaborationFeedbackResponse> getCollaborationFeedbackByTargetId(@RequestBody CollaborationFeedbackRequest collaborationFeedbackRequest) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         if(functionHelper.checkPermissionHrm(UUID.fromString(userId), collaborationFeedbackRequest.getTargetId())) {
-            CollaborationFeedbackResponse result = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(
+            CollaborationFeedbackResponse result = collaborationFeedbackService.getCollaborationByTargetIdAndTimePeriod(
                     collaborationFeedbackRequest.getTargetId(),
                     collaborationFeedbackRequest.getTimePeriod(),
                     FeedbackStatus.COMPLETED,

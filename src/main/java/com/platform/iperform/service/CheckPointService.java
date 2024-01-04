@@ -11,31 +11,36 @@ import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
 import com.platform.iperform.dataaccess.checkpoint.mapper.CheckPointDataAccessMapper;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.model.CheckPointItem;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class CheckPointService {
     private final CheckPointRepositoryImpl checkPointRepository;
     private final CheckPointItemRepositoryImpl checkPointItemRepository;
     private final CheckPointDataAccessMapper checkPointDataAccessMapper;
     private final FunctionHelper functionHelper;
+    private final SlackService slackService;
 
     public CheckPointService(CheckPointRepositoryImpl checkPointRepository,
                              CheckPointItemRepositoryImpl checkPointItemRepository,
                              CheckPointDataAccessMapper checkPointDataAccessMapper,
-                             FunctionHelper functionHelper) {
+                             FunctionHelper functionHelper, SlackService slackService) {
         this.checkPointRepository = checkPointRepository;
         this.checkPointItemRepository = checkPointItemRepository;
         this.checkPointDataAccessMapper = checkPointDataAccessMapper;
         this.functionHelper = functionHelper;
+        this.slackService = slackService;
     }
     @Transactional(readOnly = true)
     public CheckPointResponse getCheckPointByUserId(CheckPointRequest checkPointRequest) {
@@ -72,12 +77,22 @@ public class CheckPointService {
         checkPointEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         List<CheckPointItem> checkPointItemEntities = checkPointRequest.getCheckPoint().getCheckPointItems();
         checkPointItemRepository.saveAll(checkPointItemEntities);
+        CheckPointStatus checkPointStatusBefore = checkPointEntity.getStatus();
         BeanUtils.copyProperties(
                 checkPointRequest.getCheckPoint(),
                 checkPointEntity,
                 functionHelper.getNullPropertyNames(checkPointRequest.getCheckPoint())
         );
         CheckPointEntity result = checkPointRepository.save(checkPointEntity);
+        if(!checkPointStatusBefore.equals(CheckPointStatus.FINISHED) && checkPointEntity.getStatus().equals(CheckPointStatus.FINISHED)) {
+            try {
+                Map<String, Object> userInfo = functionHelper.getManagerInfo(userId.toString());
+                slackService.sendMessageDM(userInfo.get("email").toString(), "Manager đã đánh giá xong CheckPoint kì " + checkPointEntity.getTitle() + " của bạn!!!");
+            } catch (IOException e) {
+                log.error("ERROR: KHông thể gửi thông báo, lỗi HRM");
+                throw new RuntimeException("ERROR: KHông thể gửi thông báo, lỗi HRM");
+            }
+        }
         return CheckPointResponse.builder()
                 .data(checkPointDataAccessMapper.checkPointEntityToCheckPoint(result))
                 .build();

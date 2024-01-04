@@ -44,8 +44,8 @@ public class CollaborationFeedbackService {
                 .build();
     }
     @Transactional(readOnly = true)
-    public CollaborationFeedbackResponse getCollaborationByReviewerIdAndTimePeriod(UUID reviewerId, String timePeriod){
-        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByReviewerIdAndTimePeriod(reviewerId, timePeriod)
+    public CollaborationFeedbackResponse getCollaborationByReviewerIdAndTimePeriod(UUID reviewerId, String timePeriod, FeedbackStatus... feedbackStatuses){
+        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByReviewerIdAndTimePeriod(reviewerId, timePeriod, feedbackStatuses)
                 .stream().map(checkPointDataAccessMapper::collaborationFeedbackEntityToCollaborationFeedback).toList();
         return CollaborationFeedbackResponse.builder()
                 .collaborationFeedbacks(result)
@@ -87,8 +87,8 @@ public class CollaborationFeedbackService {
                 .build();
     }
 
-    public CollaborationFeedbackResponse getCollaborationByTargetIdIdAndTimePeriod(UUID targetId, String timePeriod, FeedbackStatus... feedbackStatuses) {
-        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByTargetIdIdAndTimePeriod(targetId, timePeriod, feedbackStatuses)
+    public CollaborationFeedbackResponse getCollaborationByTargetIdAndTimePeriod(UUID targetId, String timePeriod, FeedbackStatus... feedbackStatuses) {
+        List<CollaborationFeedback> result = collaborationFeedbackRepository.getCollaborationByTargetIdAndTimePeriod(targetId, timePeriod, feedbackStatuses)
                 .stream().map(checkPointDataAccessMapper::collaborationFeedbackEntityToCollaborationFeedback).toList();
         return CollaborationFeedbackResponse.builder()
                 .collaborationFeedbacks(result)

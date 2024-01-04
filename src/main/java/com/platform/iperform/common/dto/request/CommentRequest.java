@@ -13,4 +13,5 @@ public class CommentRequest {
     private final UUID parentId;
     private final Comment comment;
     private final List<Comment> comments;
+    private final UUID notifTo;
 }

@@ -74,6 +74,7 @@ CREATE TABLE "iperform".check_point
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     last_update_at TIMESTAMP WITH TIME ZONE NOT NULL,
     status check_point_status NOT NULL,
+    ranking ranking_type,
     CONSTRAINT check_point_key PRIMARY KEY (id)
 );
 

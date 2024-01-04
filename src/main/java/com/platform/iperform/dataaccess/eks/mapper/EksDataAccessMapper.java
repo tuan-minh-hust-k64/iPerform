@@ -147,7 +147,6 @@ public class EksDataAccessMapper {
                     .build();
             if(keyStep.getId() == null) {
                 keyStepEntity.setId(UUID.randomUUID());
-                log.info("KEY STEP ID: " + keyStepEntity.getId() + ", eId: " + keyStep.getEksId());
             }
             else keyStepEntity.setId(keyStep.getId());
             return keyStepEntity;
@@ -168,14 +167,12 @@ public class EksDataAccessMapper {
                     .createdAt(comment.getCreatedAt())
                     .build();
             if(comment.getId() == null) {
-                log.info(comment.getQuestionId().toString());
                 commentEntity.setId(UUID.randomUUID());
                 commentEntity.setQuestion(new QuestionEntity(comment.getQuestionId()));
                 commentEntity.setCreatedAt(ZonedDateTime.now(ZoneId.of("UTC")));
                 commentEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
             }
             else commentEntity.setId(comment.getId());
-            log.info(commentEntity.toString());
 
             return commentEntity;
         }).toList();

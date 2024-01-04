@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface CollaborationFeedbackJpaRepository extends JpaRepository<CollaborationFeedbackEntity, UUID> {
     List<CollaborationFeedbackEntity> findByReviewerId(UUID reviewerId);
-    List<CollaborationFeedbackEntity> findByReviewerIdAndTimePeriodAndStatusNot(UUID reviewerId, String timePeriod, FeedbackStatus status);
+    List<CollaborationFeedbackEntity> findByReviewerIdAndTimePeriodAndStatusIn(UUID reviewerId, String timePeriod, FeedbackStatus... status);
     List<CollaborationFeedbackEntity> findByTargetIdAndTimePeriodAndStatusIn(UUID targetId, String timePeriod, FeedbackStatus... status);
 }

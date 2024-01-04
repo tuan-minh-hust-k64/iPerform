@@ -3,21 +3,16 @@ package com.platform.iperform.controller;
 import com.platform.iperform.common.dto.request.CheckPointRequest;
 import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.exception.AuthenticateException;
-import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.service.CheckPointService;
+import com.platform.iperform.service.SlackService;
 import jakarta.mail.*;
-import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +30,14 @@ import java.util.UUID;
 public class CheckPointController {
     private final CheckPointService checkPointService;
     private final FunctionHelper functionHelper;
-    @Autowired
-    private JavaMailSender mailSender;
+    private final SlackService slackService;
 
-    public CheckPointController(CheckPointService checkPointService, FunctionHelper functionHelper) {
+    public CheckPointController(CheckPointService checkPointService,
+                                FunctionHelper functionHelper,
+                                SlackService slackService) {
         this.checkPointService = checkPointService;
         this.functionHelper = functionHelper;
+        this.slackService = slackService;
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<CheckPointResponse> getCheckPointByIdAndUserId(@PathVariable UUID id) {
@@ -104,44 +101,56 @@ public class CheckPointController {
                                 .build())
                         .build(),
                 functionHelper.authorizationMiddleware(UUID.fromString(userId), UUID.fromString(userId)));
-        try {
-            Map<String, Object> managers = functionHelper.getManagerInfo(userId);
-            String fromName = (String) managers.get("name");
-            String fromEmail = (String) managers.get("email");
-            Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.port", "587");
-            Session session = Session.getInstance(props,
-                    new Authenticator() {
-                        @Override
-                        protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication("especiallygamesbdd@gmail.com", "wiwvcqsubgnrzrwe");
-                        }
-                    });
-            List<Map<String, String>> managerInfo= (List<Map<String, String>>) managers.get("managers");
-            for (Map<String, String> item : managerInfo) {
-                MimeMessage message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(fromEmail));
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(item.get("email")));
-                message.setSubject("[iKame-iPerform] Thông báo có request check-point từ " + fromName);
-                message.setContent(
-                        "Xin chào <strong>" + item.get("name") + "</strong>,\n" +
-                        "<br/>\n" +
-                        "Bạn vừa nhận được yêu cầu <strong>CHECK-POINT</strong> từ " + fromName + ".\n" +
-                        " <br/>\n" +
-                        " Click vào <a href=\"https://calendar.google.com/calendar/u/0/r\">ĐÂY</a> để hẹn lịch ngồi 1:1 với " + fromName + ".\n" +
-                        "<br/>\n" +
-                        "Tìm hiểu thêm về quy trình Check-point tại <a href=\"https://iwiki.ikameglobal.com/doc/a3bbdcda27b04b522bf6ca66\">ĐÂY</a>.\n" +
-                        "<br/>\n" +
-                        "Nếu có vấn đề gì trong quá trình sử dụng, xin hãy để lại feedback tại <a href=\"https://form.asana.com/?k=KICYSRCeDFDjeD1p8y317g&d=1204141578322999\">ĐÂY</a> hoặc liên hệ nguyetnt@ikameglobal.com để được sự hỗ trợ kịp thời! Cảm ơn bạn vì sự hợp tác này!",
-                        "text/html;charset=UTF-8");
-                Transport.send(message);
+        if(result.getData().getId() != null) {
+            try {
+                Map<String, Object> managers = functionHelper.getManagerInfo(userId);
+                String fromName = (String) managers.get("name");
+                String fromEmail = (String) managers.get("email");
+                Properties props = new Properties();
+                props.put("mail.smtp.auth", "true");
+                props.put("mail.smtp.starttls.enable", "true");
+                props.put("mail.smtp.host", "smtp.gmail.com");
+                props.put("mail.smtp.port", "587");
+                Session session = Session.getInstance(props,
+                        new Authenticator() {
+                            @Override
+                            protected PasswordAuthentication getPasswordAuthentication() {
+                                return new PasswordAuthentication("especiallygamesbdd@gmail.com", "wiwvcqsubgnrzrwe");
+                            }
+                        });
+                List<Map<String, String>> managerInfo= (List<Map<String, String>>) managers.get("managers");
+                for (Map<String, String> item : managerInfo) {
+                    slackService.sendMessageDM(
+                            item.get("email"),
+                            "Subject: [iPerform] Bạn nhận được đề xuất Checkpoint *"+result.getData().getTitle()+"* từ *" + fromName + "*\n" +
+                                    "Dear Manager,\n" +
+                                    "Team member *" + fromName + "* đã hoàn thành phần tự đánh giá cho đợt check point *"+result.getData().getTitle()+"* và gửi đề xuất ngồi 1:1 với bạn.\n" +
+                                    "Bạn có thể review phần Tự đánh giá tại <https://iperform.ikameglobal.com/#/checkpoint|*ĐÂY*> và hãy sớm sắp xếp lịch ngồi 1:1 nhé!\n" +
+                                    "Vui lòng liên hệ đội ngũ phát triển iPerform nếu không truy cập được link trên!"
+                            );
+
+                    MimeMessage message = new MimeMessage(session);
+                    message.setFrom(new InternetAddress(fromEmail));
+                    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(item.get("email")));
+                    message.setSubject("[iKame-iPerform] Thông báo có request check-point từ " + fromName);
+                    message.setContent(
+                            "Xin chào <strong>" + item.get("name") + "</strong>,\n" +
+                                    "<br/>\n" +
+                                    "Bạn vừa nhận được yêu cầu <strong>CHECK-POINT</strong> từ " + fromName + ".\n" +
+                                    " <br/>\n" +
+                                    " Click vào <a href=\"https://calendar.google.com/calendar/u/0/r\">ĐÂY</a> để hẹn lịch ngồi 1:1 với " + fromName + ".\n" +
+                                    "<br/>\n" +
+                                    "Tìm hiểu thêm về quy trình Check-point tại <a href=\"https://iwiki.ikameglobal.com/doc/a3bbdcda27b04b522bf6ca66\">ĐÂY</a>.\n" +
+                                    "<br/>\n" +
+                                    "Nếu có vấn đề gì trong quá trình sử dụng, xin hãy để lại feedback tại <a href=\"https://form.asana.com/?k=KICYSRCeDFDjeD1p8y317g&d=1204141578322999\">ĐÂY</a> hoặc liên hệ nguyetnt@ikameglobal.com để được sự hỗ trợ kịp thời! Cảm ơn bạn vì sự hợp tác này!",
+                            "text/html;charset=UTF-8");
+                    Transport.send(message);
+                }
+            } catch (IOException | MessagingException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException | MessagingException e) {
-            throw new RuntimeException(e);
         }
+
 
         return ResponseEntity.ok("OK");
     }

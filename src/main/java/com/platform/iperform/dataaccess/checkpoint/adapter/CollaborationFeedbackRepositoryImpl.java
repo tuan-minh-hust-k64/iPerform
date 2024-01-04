@@ -25,14 +25,14 @@ public class CollaborationFeedbackRepositoryImpl {
     public List<CollaborationFeedbackEntity> saveAll(List<CollaborationFeedbackEntity> collaborationFeedbackEntityList) {
         return collaborationFeedbackJpaRepository.saveAll(collaborationFeedbackEntityList);
     }
-    public List<CollaborationFeedbackEntity> getCollaborationByReviewerIdAndTimePeriod(UUID reviewerId, String timePeriod) {
-        return collaborationFeedbackJpaRepository.findByReviewerIdAndTimePeriodAndStatusNot(reviewerId, timePeriod, FeedbackStatus.DELETED);
+    public List<CollaborationFeedbackEntity> getCollaborationByReviewerIdAndTimePeriod(UUID reviewerId, String timePeriod, FeedbackStatus... feedbackStatuses) {
+        return collaborationFeedbackJpaRepository.findByReviewerIdAndTimePeriodAndStatusIn(reviewerId, timePeriod, feedbackStatuses);
     }
     public Optional<CollaborationFeedbackEntity> findById(UUID id) {
         return collaborationFeedbackJpaRepository.findById(id);
     }
 
-    public List<CollaborationFeedbackEntity> getCollaborationByTargetIdIdAndTimePeriod(UUID targetId, String timePeriod, FeedbackStatus... feedbackStatuses) {
+    public List<CollaborationFeedbackEntity> getCollaborationByTargetIdAndTimePeriod(UUID targetId, String timePeriod, FeedbackStatus... feedbackStatuses) {
         return collaborationFeedbackJpaRepository.findByTargetIdAndTimePeriodAndStatusIn(targetId, timePeriod, feedbackStatuses);
     }
 }

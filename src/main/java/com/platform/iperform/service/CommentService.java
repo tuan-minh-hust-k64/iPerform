@@ -11,27 +11,37 @@ import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
 import com.platform.iperform.dataaccess.eks.mapper.EksDataAccessMapper;
 import com.platform.iperform.model.CheckIn;
 import com.platform.iperform.model.Comment;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class CommentService {
     private final EksDataAccessMapper eksDataAccessMapper;
     private final CommentRepositoryImpl commentRepository;
     private final FunctionHelper functionHelper;
     private final CheckInService checkInService;
+    private final SlackService slackService;
 
-    public CommentService(EksDataAccessMapper eksDataAccessMapper, CommentRepositoryImpl commentRepository, FunctionHelper functionHelper, CheckInService checkInService) {
+    public CommentService(EksDataAccessMapper eksDataAccessMapper,
+                          CommentRepositoryImpl commentRepository,
+                          FunctionHelper functionHelper,
+                          CheckInService checkInService,
+                          SlackService slackService) {
         this.eksDataAccessMapper = eksDataAccessMapper;
         this.commentRepository = commentRepository;
         this.functionHelper = functionHelper;
         this.checkInService = checkInService;
+        this.slackService = slackService;
     }
     @Transactional(readOnly = true)
     public CommentResponse getCommentByParentId(CommentRequest commentRequest) {
@@ -44,6 +54,18 @@ public class CommentService {
     @Transactional
     public CommentResponse createComment(CommentRequest commentRequest) {
         Comment result = commentRepository.save(commentRequest.getComment());
+        try {
+            if(commentRequest.getNotifTo() != null) {
+                Map<String, Object> userInfo = functionHelper.getManagerInfo(commentRequest.getNotifTo().toString());
+                slackService.sendMessageDM(userInfo.get("email").toString(),
+                        "[iPerform] Bạn nhận được comment mới từ manager trên iPerform\n" +
+                        "Click ngay vào <https://iperform.ikameglobal.com/#/checkpoint|*ĐÂY*> để đọc comment nhé!\n" +
+                        "Vui lòng liên hệ đội ngũ phát triển iPerform nếu không truy cập được link trên!");
+            }
+        } catch (IOException e) {
+            log.error("ERROR: KHông thể gửi thông báo, lỗi HRM");
+            throw new RuntimeException("ERROR: KHông thể gửi thông báo, lỗi HRM");
+        }
         return CommentResponse.builder()
                 .comment(List.of(result))
                 .build();
@@ -58,6 +80,18 @@ public class CommentService {
                                 .id(commentRequest.getComments().get(0).getParentId())
                                 .build())
                 .build());
+        try {
+            if(commentRequest.getNotifTo() != null) {
+                Map<String, Object> userInfo = functionHelper.getManagerInfo(commentRequest.getNotifTo().toString());
+                slackService.sendMessageDM(userInfo.get("email").toString(),
+                        "[iPerform] Bạn nhận được comment mới từ " + userInfo.get("name") + " trên iPerform\n" +
+                                "Click ngay vào <https://iperform.ikameglobal.com/#/check-in|*ĐÂY*> để đọc comment nhé!\n" +
+                                "Vui lòng liên hệ đội ngũ phát triển iPerform nếu không truy cập được link trên!");
+            }
+        } catch (IOException e) {
+            log.error("ERROR: KHông thể gửi thông báo, lỗi HRM");
+            throw new RuntimeException("ERROR: KHông thể gửi thông báo, lỗi HRM");
+        }
         return CommentResponse.builder()
                 .comment(result)
                 .build();

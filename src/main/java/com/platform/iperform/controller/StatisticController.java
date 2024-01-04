@@ -65,7 +65,7 @@ public class StatisticController {
                         .userId(UUID.fromString(item.get("id").toString()))
                                 .title(title)
                         .build());
-                CollaborationFeedbackResponse statisticFeedback = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(UUID.fromString(item.get("id").toString()), title, FeedbackStatus.INIT);
+                CollaborationFeedbackResponse statisticFeedback = collaborationFeedbackService.getCollaborationByTargetIdAndTimePeriod(UUID.fromString(item.get("id").toString()), title, FeedbackStatus.INIT);
                 item.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
                 item.put("checkPointId", statisticCheckPoint.getData().getId());
                 item.put("ranking", statisticCheckPoint.getData().getRanking());
@@ -88,10 +88,20 @@ public class StatisticController {
                         .userId(UUID.fromString(item.get("id").toString()))
                         .title(timePeriod == null ? functionHelper.calculateQuarter():timePeriod)
                         .build());
+                List<?> statisticFeedback = collaborationFeedbackService.getCollaborationByReviewerIdAndTimePeriod(UUID.fromString(item.get("id").toString()),
+                        timePeriod == null ? functionHelper.calculateQuarter() : timePeriod,
+                        FeedbackStatus.INIT, FeedbackStatus.COMPLETED).getCollaborationFeedbacks().stream().map(x -> {
+                            Map<String, String> tempFeedback = new HashMap<>();
+                            tempFeedback.put("targetId", x.getTargetId().toString());
+                            tempFeedback.put("status", x.getStatus().name());
+                            return tempFeedback;
+                }).toList();
+
                 Map<String, Object> tempRep = (Map<String, Object>) item.get("teams");
                 Map<String, Object> temp = new HashMap<>();
                 temp.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
                 temp.put("id", item.get("id"));
+                temp.put("feedbacks", statisticFeedback);
                 temp.put("name", item.get("name"));
                 temp.put("email", item.get("email"));
                 temp.put("team_name", tempRep.get("full_name"));
@@ -113,7 +123,7 @@ public class StatisticController {
                 .userId(UUID.fromString(userId))
                 .build()).getCheckPoint().stream().filter(item -> item.getTitle().equals(timePeriod == null? functionHelper.calculateQuarter():timePeriod)).toList();
 
-        List<CollaborationFeedback> dataFeedBack = collaborationFeedbackService.getCollaborationByTargetIdIdAndTimePeriod(
+        List<CollaborationFeedback> dataFeedBack = collaborationFeedbackService.getCollaborationByTargetIdAndTimePeriod(
                 UUID.fromString(userId), timePeriod, FeedbackStatus.INIT, FeedbackStatus.COMPLETED
         ).getCollaborationFeedbacks();
         Map<String, Object> data = new HashMap<>();

@@ -100,6 +100,7 @@ public class StatisticController {
                 Map<String, Object> tempRep = (Map<String, Object>) item.get("teams");
                 Map<String, Object> temp = new HashMap<>();
                 temp.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
+                temp.put("ranking", statisticCheckPoint.getData().getRanking());
                 temp.put("id", item.get("id"));
                 temp.put("feedbacks", statisticFeedback);
                 temp.put("name", item.get("name"));

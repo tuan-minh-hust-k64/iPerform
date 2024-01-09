@@ -30,5 +30,5 @@ spring:
             enable: true
 
 slack-config:
-  user-oauth-token: xoxp-4127893326450-5988206214897-6417175210162-bb5c5df842337a2a944bdba7db7a436a
-  bot-user-oauth-token: xoxb-4127893326450-6417062971715-Q7KiPGuGTBScxFbcGOns50l5
+  user-oauth-token: xoxp-4127893326450-5988206214897-6429491247332-1e8be3fb44d531c059dbb05a42744681
+  bot-user-oauth-token: xoxb-4127893326450-6417062971715-aJi83ALGcLt1oAvr04bFFT8s

@@ -73,7 +73,7 @@ public class CheckPointController {
         checkPointRequest.getCheckPoint().setUserId(UUID.fromString(userId));
         CheckPointResponse checkExist = checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
                 .userId(UUID.fromString(userId))
-                .title(functionHelper.calculateQuarter())
+                .title(checkPointRequest.getCheckPoint().getTitle() == null? functionHelper.calculateQuarter() : checkPointRequest.getCheckPoint().getTitle())
                 .build());
         if(checkExist.getData().getId() != null) {
             throw new RuntimeException("Check point is already exist!!!");
@@ -122,10 +122,8 @@ public class CheckPointController {
                 for (Map<String, String> item : managerInfo) {
                     slackService.sendMessageDM(
                             item.get("email"),
-                            "Subject: [iPerform] Bạn nhận được đề xuất Checkpoint *"+result.getData().getTitle()+"* từ *" + fromName + "*\n" +
-                                    "Dear Manager,\n" +
-                                    "Team member *" + fromName + "* đã hoàn thành phần tự đánh giá cho đợt check point *"+result.getData().getTitle()+"* và gửi đề xuất ngồi 1:1 với bạn.\n" +
-                                    "Bạn có thể review phần Tự đánh giá tại <https://iperform.ikameglobal.com/#/checkpoint|*ĐÂY*> và hãy sớm sắp xếp lịch ngồi 1:1 nhé!\n" +
+                            "[iPerform] Dear Manager, Bạn nhận được đề xuất Checkpoint *"+result.getData().getTitle()+"* từ *" + fromName + "*\n" +
+                                    "Bạn có thể review phần Tự đánh giá tại <https://iperform.ikameglobal.com/#/checkpoint|*ĐÂY*> và hãy sớm sắp xếp lịch ngồi với *" + fromName + "* 1:1 nhé!\n" +
                                     "Vui lòng liên hệ đội ngũ phát triển iPerform nếu không truy cập được link trên!"
                             );
 

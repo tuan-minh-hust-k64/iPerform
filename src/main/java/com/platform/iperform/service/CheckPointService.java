@@ -74,6 +74,9 @@ public class CheckPointService {
     public CheckPointResponse updateCheckPointByUserId(CheckPointRequest checkPointRequest, UUID userId) {
         CheckPointEntity checkPointEntity = checkPointRepository.findByIdAndUserId(checkPointRequest.getCheckPoint().getId(), userId)
                 .orElseThrow(() -> new NotFoundException("Not Found CheckPoint with id: " + checkPointRequest.getCheckPoint().getId()));
+//        if(checkPointEntity.getStatus().equals(CheckPointStatus.FINISHED)) {
+//            throw new RuntimeException("Cannot update Checkpoint when finished!");
+//        }
         checkPointEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         List<CheckPointItem> checkPointItemEntities = checkPointRequest.getCheckPoint().getCheckPointItems();
         checkPointItemRepository.saveAll(checkPointItemEntities);

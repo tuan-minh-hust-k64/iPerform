@@ -75,9 +75,7 @@ public class CheckInController {
             for (Map<String, String> item : managerInfo) {
                 slackService.sendMessageDM(
                         item.get("email"),
-                        "Subject: [iPerform] Bạn nhận được đề xuất Check-In từ *" + fromName + "*\n" +
-                                "Dear Manager,\n" +
-                                "Team member *" + fromName + "* đã hoàn thành phần check-in nháp và gửi đề xuất ngồi 1:1 với bạn.\n" +
+                        "[iPerform] Dear Manager, Bạn nhận được đề xuất Check-In từ *" + fromName + "*\n" +
                                 "Bạn có thể review phần check-in nháp tại <https://iperform.ikameglobal.com/#/check-in|*ĐÂY*> và hãy sớm sắp xếp lịch ngồi 1:1 nhé!\n" +
                                 "Vui lòng liên hệ đội ngũ phát triển iPerform nếu không truy cập được link trên!"
                 );

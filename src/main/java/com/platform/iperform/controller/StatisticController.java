@@ -99,7 +99,20 @@ public class StatisticController {
 
                 Map<String, Object> tempRep = (Map<String, Object>) item.get("teams");
                 Map<String, Object> temp = new HashMap<>();
+                Map<String, String> statisticCheckPointItem = new HashMap<>();
+                statisticCheckPoint.getData().getCheckPointItems().forEach(checkPointItem -> {
+                    if(!checkPointItem.getComments().isEmpty()) {
+                        if(!Objects.equals(statisticCheckPointItem.get(checkPointItem.getTitle()), "COMPLETED")) {
+                            statisticCheckPointItem.put(checkPointItem.getTitle(), "COMPLETED");
+                        }
+                    } else {
+                        if(!Objects.equals(statisticCheckPointItem.get(checkPointItem.getTitle()), "COMPLETED")) {
+                            statisticCheckPointItem.put(checkPointItem.getTitle(), "INIT");
+                        }
+                    }
+                });
                 temp.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
+                temp.put("checkPointItems", statisticCheckPointItem);
                 temp.put("ranking", statisticCheckPoint.getData().getRanking());
                 temp.put("id", item.get("id"));
                 temp.put("feedbacks", statisticFeedback);
@@ -131,5 +144,32 @@ public class StatisticController {
         data.put("checkPoints", dataCheckPoint);
         data.put("feedback", dataFeedBack);
         return ResponseEntity.ok(data);
+    }
+
+    @GetMapping(value = "/eks")
+    public ResponseEntity<?> statisticEks(@RequestParam(required = false) String timePeriod) {
+        List<Map<String, Object>> result = null;
+        try {
+            result = functionHelper.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
+            List<Map<String, Object>> data = result.stream().map(item -> {
+                EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.get("id").toString()),
+                        timePeriod == null ? functionHelper.calculateQuarter() : timePeriod);
+                Map<String, Object> tempRep = (Map<String, Object>) item.get("teams");
+                Map<String, Object> temp = new HashMap<>();
+                temp.put("id", item.get("id"));
+                temp.put("name", item.get("name"));
+                temp.put("email", item.get("email"));
+                temp.put("team_name", tempRep.get("full_name"));
+                temp.put("eks", statisticEks.getEks());
+                return temp;
+            }).toList();
+            Function<Map<String, Object>, String> classificationFunction = item -> item.get("team_name").toString();;
+            Supplier<Map<String, List<Map<String, Object>>>> mapSupplier =  TreeMap::new;
+            Map<String, List<Map<String, Object>>> groupedTeam = data.stream().collect(Collectors.groupingBy(classificationFunction, mapSupplier, Collectors.toList()));
+            return ResponseEntity.ok(groupedTeam);
+        } catch (IOException e) {
+            log.error("Get Info Team By Manager Id Failure: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }

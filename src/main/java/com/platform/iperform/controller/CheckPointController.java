@@ -58,6 +58,9 @@ public class CheckPointController {
                         userId
                 ))
                 .build());
+        result.getCheckPoint().forEach(item -> {
+            item.setRanking(null);
+        });
         if(timePeriod.equals("all")) {
             return ResponseEntity.ok(result);
         } else {

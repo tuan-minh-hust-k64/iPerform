@@ -1,5 +1,6 @@
 package com.platform.iperform.dataaccess.checkpoint.adapter;
 
+import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.common.valueobject.CommentStatus;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
 import com.platform.iperform.dataaccess.checkpoint.mapper.CheckPointDataAccessMapper;
@@ -58,7 +59,16 @@ public class CheckPointRepositoryImpl {
     public Optional<CheckPointEntity> findByIdAndUserId(UUID id, UUID userId) {
         return checkPointJpaRepository.findByIdAndUserId(id, userId);
     }
-    public Optional<List<CheckPointEntity>> findByUserIdAndTitle(UUID userId, String title) {
-        return checkPointJpaRepository.findByUserIdAndTitle(userId, title);
+    public CheckPoint findByUserIdAndTitle(UUID userId, String title) {
+        CheckPoint checkPoint = checkPointDataAccessMapper.checkPointEntityToCheckPoint(
+                checkPointJpaRepository.findByUserIdAndTitle(userId, title).orElse(CheckPointEntity.builder()
+                        .status(CheckPointStatus.INIT).build())
+        );
+        checkPoint.getCheckPointItems().forEach(checkPointItem -> {
+            List<CommentEntity> commentCheckPointItem = commentJpaRepository.findByParentIdAndStatusOrderByCreatedAtAsc(checkPointItem.getId(), CommentStatus.INIT)
+                    .orElse(List.of());
+            checkPointItem.setComments(eksDataAccessMapper.commentEntitiesToComments(commentCheckPointItem));
+        });
+        return checkPoint;
     }
 }

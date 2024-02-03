@@ -8,6 +8,8 @@ import com.platform.iperform.service.MailService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.graphql.client.HttpGraphQlClient;
+import org.springframework.graphql.client.WebGraphQlClient;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,9 +19,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Controller
 @RequestMapping(value = "/api/auth")
@@ -76,22 +81,17 @@ public class AuthController {
 //                .headers(responseHeaders)
                 .body(authenHrm);
     }
-    @GetMapping(value = "/fake")
-    public ResponseEntity<String> fakeAuthGG() {
-       mailService.sendEmail();
+    @GetMapping(value = "/get-all-users")
+    public ResponseEntity<?> getAllUsers() {
         return ResponseEntity
                 .ok()
-//                .headers(responseHeaders)
-                .body("Ok");
+                .body(functionHelper.getAllUserFromHrm());
     }
     @GetMapping("/xx")
-    public ResponseEntity<String> setCookie(HttpServletResponse response) {
+    public ResponseEntity<?> setCookie(HttpServletResponse response) {
         // create a cookie
-        Cookie cookie = new Cookie("username", "Jovan");
-
-        //add cookie to response
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok("OK");
+        return ResponseEntity
+                .ok()
+                .body(functionHelper.getMyTeamInfo("786acdc6-8a6b-4a93-9d21-286cfd65e4fa"));
     }
 }

@@ -1,14 +1,19 @@
 package com.platform.iperform.common.utils;
 
 import com.google.gson.reflect.TypeToken;
+import com.platform.iperform.common.dto.graphql.ManagerTeamType;
 import com.platform.iperform.common.dto.request.AuthRequest;
 import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.model.Permission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.graphql.client.HttpGraphQlClient;
 import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +30,15 @@ import java.util.*;
 @Slf4j
 public class FunctionHelper {
     private final static Gson GSON = new Gson();
-
+    private final static WebClient webClient = WebClient.builder()
+            .baseUrl("https://users.ikameglobal.com/graphql")
+            .build();
+    private final static HttpGraphQlClient graphQlClient = HttpGraphQlClient.builder(webClient)
+            .headers(headers -> {
+                headers.add("apikey", "zl78vy2caj1vhmhwzf5qaf36h5p00z");
+                headers.add("passport", "minhvt@2024");
+            })
+            .build();
     public String calculateQuarter() {
         Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH) + 1;
@@ -53,7 +66,73 @@ public class FunctionHelper {
         return source;
     }
 
+    public List<Object> getAllUserFromHrm() {
+        String query = "query{\n" +
+                "  getAllUsers{\n" +
+                "    id\n" +
+                "    email\n" +
+                "    avatar\n" +
+                "    name\n" +
+                "    id_employee\n" +
+                "    is_active\n" +
+                "    start_date\n" +
+                "    positions{\n" +
+                "      name\n" +
+                "    }\n" +
+                "    teams{\n" +
+                "      name\n" +
+                "    }\n" +
+                "  }\n" +
+                "}\n";
+
+        Mono<List<Object>> result = graphQlClient.document(query)
+                .retrieve("getAllUsers").toEntityList(Object.class);
+        return result.block();
+    }
+    public Object getMyTeamInfo(String userId) {
+        String queryUserById = "query {\n" +
+                "  \tgetUserById(id:\"" + userId + "\") {\n" +
+                "    manager_teams{\n" +
+                "      teams{\n" +
+                "        id\n" +
+                "        name\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        List<ManagerTeamType> result = graphQlClient.document(queryUserById)
+                .retrieve("getUserById.manager_teams").toEntityList(ManagerTeamType.class).block();
+
+
+        return result;
+    }
+
     public Map<String, Object> authenticateHrm(AuthRequest authRequest) {
+//        String googleAuth = "query {\n" +
+//                "\tgoogleAuth(auth: {\n" +
+//                "    code: \"" + authRequest.getCode() + "\", \n" +
+//                "    resource_type: \"" + authRequest.getResourceType() + "\"\n" +
+//                "  }) {\n" +
+//                "    access {\n" +
+//                "      resource\n" +
+//                "      permission\n" +
+//                "    }\n" +
+//                "    name\n" +
+//                "    id_token\n" +
+//                "    userpfp\n" +
+//                "    position_id\n" +
+//                "    username\n" +
+//                "    useremail\n" +
+//                "    user_id\n" +
+//                "    team_id\n" +
+//                "    team_name\n" +
+//                "    position_name\n" +
+//                "  }\n" +
+//                "}";
+//        return graphQlClient.document(googleAuth)
+//                .retrieve("googleAuth").toEntity(Object.class).block();
+
+
         String jsonBody = "{ \"code\": \"" + authRequest.getCode() + "\","+ "\"resource_type\": \"" + "iPerform" + "\"}";
         HttpURLConnection conn = null;
         try {

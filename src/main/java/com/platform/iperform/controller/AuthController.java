@@ -6,6 +6,7 @@ import com.platform.iperform.security.jwt.JwtUtils;
 import com.platform.iperform.security.services.UserDetailsImpl;
 import com.platform.iperform.service.MailService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
@@ -76,9 +77,10 @@ public class AuthController {
 //                .headers(responseHeaders)
                 .body(authenHrm);
     }
-    @GetMapping(value = "/fake")
-    public ResponseEntity<String> fakeAuthGG() {
-       mailService.sendEmail();
+    @GetMapping(value = "/mobile_attribution")
+    public ResponseEntity<String> fakeAuthGG(HttpServletRequest request) {
+//       mailService.sendEmail();
+        log.info(request.getQueryString());
         return ResponseEntity
                 .ok()
 //                .headers(responseHeaders)

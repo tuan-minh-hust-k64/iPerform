@@ -94,23 +94,6 @@ public class EksService {
                 .build();
     }
 
-//    @Transactional(readOnly = true)
-//    public EksResponse getFilterByIdAndTimeAndCategory(UUID userId, String timePeriod,@Nullable String category) {
-//        System.out.println("category:: " + category);
-//        System.out.println("timePeriod:: " + timePeriod);
-//        Category categoryReq = category != null && !category.isEmpty() ? Category.valueOf(category) : Category.NORMAL;
-//        List<Eks> result = eksRepository.getEksByUserIdAndFilters(userId, timePeriod, categoryReq).orElse(List.of());
-//        result.forEach(item -> {
-//            Optional<List<Comment>> comments = commentRepository.getCommentByParentId(item.getId());
-//            item.setComments(comments.orElse(List.of()));
-//            item.setKeySteps(item.getKeySteps().stream().filter(keyStep -> keyStep.getStatus() != EksStatus.INACTIVE).toList());
-//        });
-//        return EksResponse.builder()
-//                .eks(result)
-//                .build();
-//    }
-
-
     @Transactional(readOnly = true)
     public EksResponse getEksById(UUID eksId) {
         Eks result = eksDataAccessMapper.eksEntityToEks(eksRepository.findById(eksId)

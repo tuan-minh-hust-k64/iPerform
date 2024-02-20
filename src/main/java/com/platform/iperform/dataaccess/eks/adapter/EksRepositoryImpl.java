@@ -26,9 +26,6 @@ public class EksRepositoryImpl {
     }
 
     public Optional<List<Eks>> getEksByUserIdAndFilters(UUID userId, String timePeriod, Category category) {
-        System.out.println(userId);
-        System.out.println(timePeriod);
-        System.out.println(category);
         return Optional.of(eksJpaRepository.findByUserIdAndCategoryAndTimePeriod( userId,category,timePeriod)
                 .orElseThrow(() -> new NotFoundException("Not found eks with userId " + userId + ", timePeriod: " + timePeriod + ", category: " + category ))
                 .stream()

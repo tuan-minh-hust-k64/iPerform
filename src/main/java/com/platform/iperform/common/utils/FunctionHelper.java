@@ -76,7 +76,6 @@ public class FunctionHelper {
             return GSON.fromJson(response.toString(), new TypeToken<Map<String, ?>>(){}.getType());
         } catch (IOException e) {
             System.out.println(e.getMessage());
-
             throw new AuthenticateException("Could not load authenticate in HRM");
         }
     }

@@ -1,5 +1,6 @@
 package com.platform.iperform.model;
 
+import com.platform.iperform.common.valueobject.Category;
 import com.platform.iperform.common.valueobject.EksStatus;
 import com.platform.iperform.common.valueobject.EksType;
 import lombok.*;
@@ -16,6 +17,7 @@ public class Eks {
     private final UUID id;
     private UUID userId;
     private final ZonedDateTime createdAt;
+    private Category category;
     private EksType type;
     private String content;
     private int process;
@@ -38,6 +40,7 @@ public class Eks {
                 ", userId='" + userId + '\'' +
                 ", createdAt=" + createdAt +
                 ", type=" + type +
+                ", category=" + category +
                 ", content='" + content + '\'' +
                 ", process=" + process +
                 ", status=" + status +

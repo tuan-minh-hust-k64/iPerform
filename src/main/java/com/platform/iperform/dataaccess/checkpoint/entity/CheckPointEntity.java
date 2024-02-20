@@ -1,6 +1,7 @@
 package com.platform.iperform.dataaccess.checkpoint.entity;
 
 import com.platform.iperform.common.valueobject.BaseEntityAllowComment;
+import com.platform.iperform.common.valueobject.Category;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.common.valueobject.RankingType;
 import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
@@ -24,6 +25,8 @@ public class CheckPointEntity extends BaseEntityAllowComment{
     private UUID userId;
     private ZonedDateTime createdAt;
     private String title;
+    @Enumerated(EnumType.STRING)
+    private Category category;
     @Enumerated(EnumType.STRING)
     private CheckPointStatus status;
     private ZonedDateTime lastUpdateAt;

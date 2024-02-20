@@ -67,7 +67,6 @@ public class CollaborationFeedbackController {
         } else {
             throw new AuthenticateException("You are not permission!");
         }
-
     }
     @PutMapping
     public ResponseEntity<CollaborationFeedbackResponse> updateCollaborationFeedback(@RequestBody CollaborationFeedbackRequest collaborationFeedbackRequest) {

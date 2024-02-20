@@ -4,6 +4,7 @@ import com.platform.iperform.common.dto.request.EksRequest;
 import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.Category;
 import com.platform.iperform.service.EksService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +27,14 @@ public class EksController {
     }
 
     @GetMapping
-    public ResponseEntity<EksResponse> getEksByUserId(@RequestParam UUID userId, @RequestParam String timePeriod) {
+    public ResponseEntity<EksResponse> getEksByUserId(@RequestParam UUID userId, @RequestParam(required = false) String timePeriod, @RequestParam(required = false) String category) {
         EksResponse result = eksService.getEksByUserId(
                 functionHelper.authorizationMiddleware(
                         UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName()),
                         userId),
-                timePeriod);
+                timePeriod,
+                category);
         return ResponseEntity.ok(result);
-
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<EksResponse> getEksByIdAndUserId(@PathVariable UUID id) {
@@ -49,8 +50,7 @@ public class EksController {
     @PostMapping
     public ResponseEntity<EksResponse> createEks(@RequestBody EksRequest eksRequest) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        eksRequest.getEks().forEach(item -> item.setUserId(UUID.fromString(userId)));
-        EksResponse result = eksService.createEks(eksRequest.getEks());
+        EksResponse result = eksService.createEks(eksRequest.getEks(), UUID.fromString(userId));
         return ResponseEntity.ok(result);
     }
     @PutMapping

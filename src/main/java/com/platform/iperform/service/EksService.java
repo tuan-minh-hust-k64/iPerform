@@ -4,6 +4,7 @@ import com.platform.iperform.common.dto.request.EksRequest;
 import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.Category;
 import com.platform.iperform.common.valueobject.EksStatus;
 import com.platform.iperform.dataaccess.comment.adapter.CommentRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.adapter.CheckInRepositoryImpl;
@@ -15,6 +16,7 @@ import com.platform.iperform.model.CheckIn;
 import com.platform.iperform.model.Comment;
 import com.platform.iperform.model.Eks;
 import com.platform.iperform.model.KeyStep;
+import io.micrometer.common.lang.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -51,16 +50,16 @@ public class EksService {
         this.commentRepository = commentRepository1;
     }
     @Transactional
-    public EksResponse createEks(List<Eks> eks) {
+    public EksResponse createEks(List<Eks> eks, UUID userId) {
+        eks.forEach(item -> item.setUserId(userId));
         List<Eks> result = eksRepository.saveAll(eks);
         return EksResponse.builder()
                 .eks(result)
                 .build();
     }
     @Transactional
-
     public EksResponse updateEksByIdAndUserId(EksRequest eksRequest, UUID userId) {
-        EksEntity eksEntity = eksRepository.findByIdAndUserId(eksRequest.getData().getId(), userId)
+            EksEntity eksEntity = eksRepository.findByIdAndUserId(eksRequest.getData().getId(), userId)
                 .orElseThrow(() -> new NotFoundException("Not Found Eks with id: " + eksRequest.getData().getId() + ", userId: " + userId));
         eksEntity.setLastUpdateAt(ZonedDateTime.now(ZoneId.of("UTC")));
         List<KeyStep> keySteps = eksRequest.getData().getKeySteps();
@@ -82,8 +81,9 @@ public class EksService {
 
 
     @Transactional(readOnly = true)
-    public EksResponse getEksByUserId(UUID userId, String timePeriod) {
-        List<Eks> result = eksRepository.getEksByUserIdAndFilters(userId, timePeriod).orElse(List.of());
+    public EksResponse getEksByUserId(UUID userId,@Nullable  String timePeriod,@Nullable String category) {
+        Category categoryReq = category != null && !category.isEmpty() ? Category.valueOf(category) : Category.NORMAL;
+        List<Eks> result = eksRepository.getEksByUserIdAndFilters(userId, timePeriod, categoryReq).orElse(List.of());
         result.forEach(item -> {
             Optional<List<Comment>> comments = commentRepository.getCommentByParentId(item.getId());
             item.setComments(comments.orElse(List.of()));
@@ -93,6 +93,22 @@ public class EksService {
                 .eks(result)
                 .build();
     }
+
+//    @Transactional(readOnly = true)
+//    public EksResponse getFilterByIdAndTimeAndCategory(UUID userId, String timePeriod,@Nullable String category) {
+//        System.out.println("category:: " + category);
+//        System.out.println("timePeriod:: " + timePeriod);
+//        Category categoryReq = category != null && !category.isEmpty() ? Category.valueOf(category) : Category.NORMAL;
+//        List<Eks> result = eksRepository.getEksByUserIdAndFilters(userId, timePeriod, categoryReq).orElse(List.of());
+//        result.forEach(item -> {
+//            Optional<List<Comment>> comments = commentRepository.getCommentByParentId(item.getId());
+//            item.setComments(comments.orElse(List.of()));
+//            item.setKeySteps(item.getKeySteps().stream().filter(keyStep -> keyStep.getStatus() != EksStatus.INACTIVE).toList());
+//        });
+//        return EksResponse.builder()
+//                .eks(result)
+//                .build();
+//    }
 
 
     @Transactional(readOnly = true)

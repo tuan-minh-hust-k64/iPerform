@@ -45,11 +45,11 @@ public class StatisticController {
     }
 
     @GetMapping(value = "/my-team")
-    public ResponseEntity<?> statisticMyTeam(@RequestParam String managerId, @RequestParam String title) {
+    public ResponseEntity<?> statisticMyTeam(@RequestParam String managerId, @RequestParam String title, @RequestParam(required = false) String category) {
         try {
             List<Map<String, Object>> result = functionHelper.getTeamByManagerId(managerId);
             result.forEach(item -> {
-                EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.get("id").toString()), title);
+                EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.get("id").toString()), title, category);
                 AtomicReference<String> checkInStatus = new AtomicReference<>("COMPLETED");
                 for(int i = 0; i<statisticEks.getEks().size(); i++) {
                     if(!statisticEks.getEks().get(i).getCheckIns().stream().filter(temp -> temp.getStatus().equals(CheckInStatus.INIT)).toList().isEmpty()) {
@@ -147,13 +147,14 @@ public class StatisticController {
     }
 
     @GetMapping(value = "/eks")
-    public ResponseEntity<?> statisticEks(@RequestParam(required = false) String timePeriod) {
+    public ResponseEntity<?> statisticEks(@RequestParam(required = false) String timePeriod, @RequestParam(required = false) String category) {
         List<Map<String, Object>> result = null;
         try {
             result = functionHelper.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
             List<Map<String, Object>> data = result.stream().map(item -> {
                 EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.get("id").toString()),
-                        timePeriod == null ? functionHelper.calculateQuarter() : timePeriod);
+                        timePeriod == null ? functionHelper.calculateQuarter() : timePeriod,
+                        category) ;
                 Map<String, Object> tempRep = (Map<String, Object>) item.get("teams");
                 Map<String, Object> temp = new HashMap<>();
                 temp.put("id", item.get("id"));

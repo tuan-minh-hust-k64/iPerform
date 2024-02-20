@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface EksJpaRepository extends JpaRepository<EksEntity, UUID> {
-    Optional<List<EksEntity>> findByUserIdAndCategoryAndTimePeriod( UUID userId, Category category,String timePeriod);
+    Optional<List<EksEntity>> findByUserIdAndCategoryOrTimePeriod( UUID userId, Category category,String timePeriod);
 
     Optional<EksEntity> findByIdAndUserId(UUID id, UUID userId);
 

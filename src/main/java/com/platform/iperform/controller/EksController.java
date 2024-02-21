@@ -26,14 +26,14 @@ public class EksController {
     }
 
     @GetMapping
-    public ResponseEntity<EksResponse> getEksByUserId(@RequestParam UUID userId, @RequestParam String timePeriod) {
+    public ResponseEntity<EksResponse> getEksByUserId(@RequestParam UUID userId, @RequestParam(required = false) String timePeriod, @RequestParam(required = false) String category) {
         EksResponse result = eksService.getEksByUserId(
                 functionHelper.authorizationMiddleware(
                         UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName()),
                         userId),
-                timePeriod);
+                timePeriod,
+                category);
         return ResponseEntity.ok(result);
-
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<EksResponse> getEksByIdAndUserId(@PathVariable UUID id) {
@@ -49,8 +49,7 @@ public class EksController {
     @PostMapping
     public ResponseEntity<EksResponse> createEks(@RequestBody EksRequest eksRequest) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        eksRequest.getEks().forEach(item -> item.setUserId(UUID.fromString(userId)));
-        EksResponse result = eksService.createEks(eksRequest.getEks());
+        EksResponse result = eksService.createEks(eksRequest.getEks(), UUID.fromString(userId));
         return ResponseEntity.ok(result);
     }
     @PutMapping

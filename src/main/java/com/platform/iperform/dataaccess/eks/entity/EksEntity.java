@@ -1,9 +1,6 @@
 package com.platform.iperform.dataaccess.eks.entity;
 
-import com.platform.iperform.common.valueobject.BaseEntityAllowComment;
-import com.platform.iperform.common.valueobject.EksStatus;
-import com.platform.iperform.common.valueobject.EksType;
-import com.platform.iperform.dataaccess.comment.entity.CommentEntity;
+import com.platform.iperform.common.valueobject.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +18,8 @@ import java.util.UUID;
 public class EksEntity extends BaseEntityAllowComment {
     private UUID userId;
     private ZonedDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    private CategoryEks category;
     @Enumerated(EnumType.STRING)
     private EksType type;
     private String content;

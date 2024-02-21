@@ -4,6 +4,7 @@ import com.platform.iperform.common.dto.request.CheckPointRequest;
 import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.CategoryCheckpoint;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.service.CheckPointService;
@@ -51,7 +52,11 @@ public class CheckPointController {
 
     }
     @GetMapping
-    public ResponseEntity<CheckPointResponse> getCheckPointByUserId(@RequestParam UUID userId, @RequestParam String timePeriod) {
+    public ResponseEntity<CheckPointResponse> getCheckPointByUserId(
+            @RequestParam UUID userId,
+            @RequestParam(required = false) String timePeriod,
+            @RequestParam(required = false) String category
+    ) {
         CheckPointResponse result = checkPointService.getCheckPointByUserId(CheckPointRequest.builder()
                 .userId(functionHelper.authorizationMiddleware(
                         UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName()),
@@ -61,14 +66,22 @@ public class CheckPointController {
         result.getCheckPoint().forEach(item -> {
             item.setRanking(null);
         });
-        if(timePeriod.equals("all")) {
+
+        if(timePeriod != null && timePeriod.equals("all")) {
             return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.ok(CheckPointResponse.builder()
-                            .checkPoint(result.getCheckPoint().stream().filter(item -> item.getTitle().equals(timePeriod)).toList())
+                            .checkPoint(result.getCheckPoint().stream().filter(item -> {
+                                if (item.getTitle() == null) {
+                                    if (category != null) {
+                                        return item.getCategory().equals(CategoryCheckpoint.valueOf(category));
+                                    }
+                                    return false;
+                                }
+                                else return item.getTitle().equals(timePeriod);
+                            }).toList())
                     .build());
         }
-
     }
     @PostMapping
     public ResponseEntity<CheckPointResponse> createCheckPoint(@RequestBody CheckPointRequest checkPointRequest) {

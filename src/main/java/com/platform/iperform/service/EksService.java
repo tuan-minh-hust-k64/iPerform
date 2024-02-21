@@ -4,7 +4,8 @@ import com.platform.iperform.common.dto.request.EksRequest;
 import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.common.exception.NotFoundException;
 import com.platform.iperform.common.utils.FunctionHelper;
-import com.platform.iperform.common.valueobject.Category;
+import com.platform.iperform.common.valueobject.CategoryCheckpoint;
+import com.platform.iperform.common.valueobject.CategoryEks;
 import com.platform.iperform.common.valueobject.EksStatus;
 import com.platform.iperform.dataaccess.comment.adapter.CommentRepositoryImpl;
 import com.platform.iperform.dataaccess.eks.adapter.CheckInRepositoryImpl;
@@ -19,14 +20,12 @@ import com.platform.iperform.model.KeyStep;
 import io.micrometer.common.lang.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -82,7 +81,7 @@ public class EksService {
 
     @Transactional(readOnly = true)
     public EksResponse getEksByUserId(UUID userId,@Nullable  String timePeriod,@Nullable String category) {
-        Category categoryReq = category != null && !category.isEmpty() ? Category.valueOf(category) : null;
+        CategoryEks categoryReq = category != null && !category.isEmpty() ? CategoryEks.valueOf(category) : null;
         List<Eks> result = eksRepository.getEksByUserIdAndFilters(userId, timePeriod, categoryReq).orElse(List.of());
         result.forEach(item -> {
             Optional<List<Comment>> comments = commentRepository.getCommentByParentId(item.getId());

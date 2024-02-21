@@ -153,7 +153,7 @@ public class StatisticController {
             result = functionHelper.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
             List<Map<String, Object>> data = result.stream().map(item -> {
                 EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.get("id").toString()),
-                        timePeriod == null ? functionHelper.calculateQuarter() : timePeriod,
+                        category == null ? null : timePeriod == null ? functionHelper.calculateQuarter() : timePeriod,
                         category) ;
                 Map<String, Object> tempRep = (Map<String, Object>) item.get("teams");
                 Map<String, Object> temp = new HashMap<>();

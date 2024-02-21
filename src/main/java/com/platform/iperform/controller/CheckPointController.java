@@ -4,7 +4,7 @@ import com.platform.iperform.common.dto.request.CheckPointRequest;
 import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.utils.FunctionHelper;
-import com.platform.iperform.common.valueobject.Category;
+import com.platform.iperform.common.valueobject.CategoryCheckpoint;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.service.CheckPointService;
@@ -74,7 +74,7 @@ public class CheckPointController {
                             .checkPoint(result.getCheckPoint().stream().filter(item -> {
                                 if (item.getTitle() == null) {
                                     if (category != null) {
-                                        return item.getCategory().equals(Category.valueOf(category));
+                                        return item.getCategory().equals(CategoryCheckpoint.valueOf(category));
                                     }
                                     return false;
                                 }

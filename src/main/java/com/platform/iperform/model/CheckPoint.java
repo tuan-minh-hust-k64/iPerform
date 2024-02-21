@@ -1,6 +1,6 @@
 package com.platform.iperform.model;
 
-import com.platform.iperform.common.valueobject.Category;
+import com.platform.iperform.common.valueobject.CategoryCheckpoint;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
 import com.platform.iperform.common.valueobject.RankingType;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.UUID;
 public class CheckPoint {
     private UUID id;
     private UUID userId;
-    private Category category;
+    private CategoryCheckpoint category;
     private ZonedDateTime createdAt;
     private String title;
     private CheckPointStatus status;

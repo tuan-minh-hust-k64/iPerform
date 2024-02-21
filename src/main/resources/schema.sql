@@ -11,6 +11,8 @@ DROP TYPE IF EXISTS question_status;
 DROP TYPE IF EXISTS check_point_status;
 DROP TYPE IF EXISTS collaboration_feedback_status;
 DROP TYPE IF EXISTS ranking_type;
+drop type if exists category_eks;
+drop type if exists category_checkpoint;
 
 
 CREATE TYPE expectation_type as ENUM ('GROW_YOURSELF', 'GROW_YOUR_TEAM', 'GROW_YOUR_COMPANY');
@@ -23,6 +25,8 @@ CREATE TYPE question_status as ENUM ('DISABLE', 'ENABLE');
 CREATE TYPE check_point_status as ENUM ('INIT', 'COMPLETED', 'PENDING', 'FINISHED');
 CREATE TYPE collaboration_feedback_status as ENUM ('INIT', 'COMPLETED', 'DELETED');
 CREATE TYPE ranking_type as ENUM ('BELOW_EXPECTATIONS', 'NEAR_EXPECTATIONS_NEEDS_IMPROVEMENT', 'MEETS_EXPECTATIONS', 'EXCEEDS_EXPECTATIONS', 'OUTSTANDING');
+create type category_eks as enum('NORMAL', 'ONBOARDING');
+create type category_checkpoint as enum('NORMAL', 'ONBOARDING');
 
 DROP TABLE IF EXISTS "iperform".key_step CASCADE;
 DROP TABLE IF EXISTS "iperform".expectation CASCADE;
@@ -53,6 +57,10 @@ CREATE TABLE "iperform".expectation
     ordinal_number numeric(10, 2),
     CONSTRAINT expectation_key PRIMARY KEY (id)
 );
+alter table "iperform".iperform.expectation add column
+    category_eks category not null default 'NORMAL';
+
+
 CREATE TABLE "iperform".key_step
 (
     id uuid NOT NULL,
@@ -77,6 +85,9 @@ CREATE TABLE "iperform".check_point
     ranking ranking_type,
     CONSTRAINT check_point_key PRIMARY KEY (id)
 );
+alter table "iperform".iperform.check_point add column
+    category_checkpoint category not null default 'NORMAL';
+
 
 CREATE TABLE "iperform".check_point_item
 (

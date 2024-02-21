@@ -10,6 +10,7 @@ import com.platform.iperform.model.Eks;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class EksRepositoryImpl {
     }
 
     public Optional<List<Eks>> getEksByUserIdAndFilters(UUID userId, String timePeriod, Category category) {
-        return Optional.of(eksJpaRepository.findByUserIdAndCategoryOrTimePeriod( userId,category,timePeriod)
+        return Optional.of(eksJpaRepository.findByUserIdCategoryAndTimePeriod( userId,category,timePeriod)
                 .orElseThrow(() -> new NotFoundException("Not found eks with userId " + userId + ", timePeriod: " + timePeriod + ", category: " + category ))
                 .stream()
                 .map(eksDataAccessMapper::eksEntityToEks).collect(Collectors.toList()));

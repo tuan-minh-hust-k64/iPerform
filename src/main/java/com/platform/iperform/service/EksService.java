@@ -82,7 +82,7 @@ public class EksService {
 
     @Transactional(readOnly = true)
     public EksResponse getEksByUserId(UUID userId,@Nullable  String timePeriod,@Nullable String category) {
-        Category categoryReq = category != null && !category.isEmpty() ? Category.valueOf(category) : Category.NORMAL;
+        Category categoryReq = category != null && !category.isEmpty() ? Category.valueOf(category) : null;
         List<Eks> result = eksRepository.getEksByUserIdAndFilters(userId, timePeriod, categoryReq).orElse(List.of());
         result.forEach(item -> {
             Optional<List<Comment>> comments = commentRepository.getCommentByParentId(item.getId());

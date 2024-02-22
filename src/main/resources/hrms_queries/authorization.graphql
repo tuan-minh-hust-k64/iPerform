@@ -1,0 +1,17 @@
+query Login($idToken: String!, $resource_type: String!) {
+            googleAuth(auth: { idToken: $idToken, resource_type: $resource_type }) {
+              access {
+                resource
+                permission
+              }
+              issued_at
+              access_token
+              username
+              userpfp
+              useremail
+              user_id
+              team_id
+              team_name
+              position_name
+            }
+          }

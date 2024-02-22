@@ -92,6 +92,7 @@ public class CommentService {
             log.error("ERROR: KHông thể gửi thông báo, lỗi HRM");
             throw new RuntimeException("ERROR: KHông thể gửi thông báo, lỗi HRM");
         }
+
         return CommentResponse.builder()
                 .comment(result)
                 .build();

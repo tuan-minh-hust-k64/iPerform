@@ -121,6 +121,7 @@ public class FunctionHelper {
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
+            log.info(response.toString());
             return GSON.fromJson(response.toString(), new TypeToken<List<Map<String, ?>>>(){}.getType());
         }
     }

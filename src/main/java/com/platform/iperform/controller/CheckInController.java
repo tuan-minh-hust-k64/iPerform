@@ -9,6 +9,7 @@ import com.platform.iperform.service.SlackService;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +23,7 @@ import java.util.Properties;
 
 @Controller
 @CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
-
+@Slf4j
 @RequestMapping(value = "/api/check-in")
 public class CheckInController {
     private final SlackService slackService;
@@ -57,6 +58,7 @@ public class CheckInController {
 
         try {
             Map<String, Object> managers = functionHelper.getManagerInfo(userId);
+            log.info(managers.toString());
             String fromName = (String) managers.get("name");
             String fromEmail = (String) managers.get("email");
             Properties props = new Properties();

@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class HrmsManagerTeams extends BaseHrmsModel{
-    private List<HrmsUser> users_type;
+    private HrmsUser users;
     private List<HrmsTeam> teams;
 }

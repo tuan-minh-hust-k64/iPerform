@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -156,6 +157,9 @@ public class FunctionHelper {
                 response.append(responseLine.trim());
             }
             Map<String, Object> result = GSON.fromJson(response.toString(), new TypeToken<Map<String, ?>>(){}.getType());
+
+            log.info("result:: " + result);
+
             return (boolean) result.get("is_manager_of_user_member");
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -166,7 +170,6 @@ public class FunctionHelper {
     public String generateEmailRequestCheckIn(String content, UUID userId) {
         return "";
     }
-
     private static HttpURLConnection postHttpURLConnection(String linkUrl, String jsonBody,
                                                            Map<String, String> requestProperty
     ) throws IOException {

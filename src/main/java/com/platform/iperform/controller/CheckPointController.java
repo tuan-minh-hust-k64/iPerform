@@ -6,6 +6,8 @@ import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.common.valueobject.CategoryCheckpoint;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
+import com.platform.iperform.libs.hrms_provider.HrmsProvider;
+import com.platform.iperform.libs.hrms_provider.HrmsV3;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.service.CheckPointService;
 import com.platform.iperform.service.SlackService;
@@ -32,18 +34,25 @@ public class CheckPointController {
     private final CheckPointService checkPointService;
     private final FunctionHelper functionHelper;
     private final SlackService slackService;
+    private final HrmsProvider hrmsProvider;
 
     public CheckPointController(CheckPointService checkPointService,
                                 FunctionHelper functionHelper,
-                                SlackService slackService) {
+                                SlackService slackService,
+                                HrmsV3 hrmsProvider
+    ) {
         this.checkPointService = checkPointService;
         this.functionHelper = functionHelper;
         this.slackService = slackService;
+        this.hrmsProvider = hrmsProvider;
     }
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CheckPointResponse> getCheckPointByIdAndUserId(@PathVariable UUID id) {
+    public ResponseEntity<CheckPointResponse> getCheckPointByIdAndUserId(@PathVariable UUID id) throws Exception {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         CheckPointResponse result = checkPointService.findById(id);
+
+        hrmsProvider.checkPermissionHrm(UUID.fromString(userId), result.getData().getUserId());
+
         if(functionHelper.checkPermissionHrm(UUID.fromString(userId), result.getData().getUserId())) {
             return ResponseEntity.ok(result);
         } else {

@@ -1,5 +1,7 @@
 package com.platform.iperform.controller;
 
+import com.platform.iperform.common.dto.hrms.models.HrmsRoleProject;
+import com.platform.iperform.common.dto.hrms.models.HrmsUser;
 import com.platform.iperform.common.dto.request.CheckPointRequest;
 import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.dto.response.CollaborationFeedbackResponse;
@@ -7,6 +9,8 @@ import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.common.valueobject.CheckInStatus;
 import com.platform.iperform.common.valueobject.FeedbackStatus;
+import com.platform.iperform.libs.hrms_provider.HrmsProvider;
+import com.platform.iperform.libs.hrms_provider.HrmsV3;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.model.CollaborationFeedback;
 import com.platform.iperform.service.CheckPointService;
@@ -33,24 +37,46 @@ public class StatisticController {
     private final CheckPointService checkPointService;
     private final CollaborationFeedbackService collaborationFeedbackService;
     private final EksService eksService;
+    private final HrmsProvider hrmsProvider;
 
     public StatisticController(FunctionHelper functionHelper,
                                CheckPointService checkPointService,
                                CollaborationFeedbackService collaborationFeedbackService,
-                               EksService eksService) {
+                               EksService eksService,
+                               HrmsV3 hrmsProvider
+    ) {
         this.functionHelper = functionHelper;
         this.checkPointService = checkPointService;
         this.collaborationFeedbackService = collaborationFeedbackService;
         this.eksService = eksService;
+        this.hrmsProvider = hrmsProvider;
     }
 
     @GetMapping(value = "/my-team")
     public ResponseEntity<?> statisticMyTeam(@RequestParam String managerId, @RequestParam String title, @RequestParam(required = false) String category) {
         try {
-            List<Map<String, Object>> result = functionHelper.getTeamByManagerId(managerId);
-            result.forEach(item -> {
-                EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.get("id").toString()), title, category);
+//            List<Map<String, Object>> result = functionHelper.getTeamByManagerId(managerId);
+            List<HrmsUser> listUser = hrmsProvider.getTeamByManagerId(managerId);
+//            log.info(result.toString());
+
+            List<Map<String, Object>> result = new ArrayList<>();
+
+                listUser.forEach(item -> {
+                EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(item.getId()), title, category);
                 AtomicReference<String> checkInStatus = new AtomicReference<>("COMPLETED");
+
+                Map<String, Object> user = new HashMap<>();
+                user.put("id", item.getId());
+                user.put("positions", item.getPositions());
+                user.put("email", item.getEmail());
+                user.put("role_projects", item.getRoleProjects());
+                user.put("role_project_id", item.getRoleProjects() != null ? item.getRoleProjects().getId() : "");
+                user.put("name", item.getName());
+                user.put("team_id", item.getTeams() != null ? item.getTeams().getId() : "");
+                user.put("teams", item.getTeams() != null ? item.getTeams() : "");
+                user.put("avatar", item.getAvatar());
+                user.put("start_date", item.getStartDate());
+
                 for(int i = 0; i<statisticEks.getEks().size(); i++) {
                     if(!statisticEks.getEks().get(i).getCheckIns().stream().filter(temp -> temp.getStatus().equals(CheckInStatus.INIT)).toList().isEmpty()) {
                         checkInStatus.set("INIT");
@@ -62,20 +88,24 @@ public class StatisticController {
                     }
                 }
                 CheckPointResponse statisticCheckPoint = checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
-                        .userId(UUID.fromString(item.get("id").toString()))
+                        .userId(UUID.fromString(item.getId().toString()))
                                 .title(title)
                         .build());
-                CollaborationFeedbackResponse statisticFeedback = collaborationFeedbackService.getCollaborationByTargetIdAndTimePeriod(UUID.fromString(item.get("id").toString()), title, FeedbackStatus.INIT);
-                item.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
-                item.put("checkPointId", statisticCheckPoint.getData().getId());
-                item.put("ranking", statisticCheckPoint.getData().getRanking());
-                item.put("feedBackStatus", statisticFeedback.getCollaborationFeedbacks().isEmpty());
-                item.put("checkInStatus", checkInStatus);
+                CollaborationFeedbackResponse statisticFeedback = collaborationFeedbackService.getCollaborationByTargetIdAndTimePeriod(UUID.fromString(user.get("id").toString()), title, FeedbackStatus.INIT);
+                user.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
+                user.put("checkPointId", statisticCheckPoint.getData().getId());
+                user.put("ranking", statisticCheckPoint.getData().getRanking());
+                user.put("feedBackStatus", statisticFeedback.getCollaborationFeedbacks().isEmpty());
+                user.put("checkInStatus", checkInStatus);
+
+                result.add(user);
             });
             return ResponseEntity.ok(result);
 
         } catch (IOException e) {
             log.error("Get Info Team By Manager Id Failure: {}", e.getMessage());
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

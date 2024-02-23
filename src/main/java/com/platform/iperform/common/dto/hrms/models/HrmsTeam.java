@@ -1,17 +1,24 @@
 package com.platform.iperform.common.dto.hrms.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class HrmsTeam extends BaseHrmsModel{
+    private String id;
     private String name;
-    private String full_name;
+    @JsonProperty("full_name")
+    private String fullName;
     private String label;
-    private Boolean is_active;
-    private HrmsManagerTeams manager_teams;
-    private HrmsTeam parent_teams;
-    private List<HrmsTeam> sub_teams;
+    @JsonProperty("is_active")
+    private Boolean isActive;
+    @JsonProperty("manager_teams")
+    private List<HrmsManagerTeams> managerTeams;
+    @JsonProperty("parent_teams")
+    private HrmsTeam parentTeams;
+    @JsonProperty("sub_teams")
+    private List<HrmsTeam> subTeams;
     private List<HrmsUser> users;
 }

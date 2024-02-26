@@ -68,8 +68,6 @@ public class FunctionHelper {
         }
     }
 
-
-
     public String generateEmailRequestCheckIn(String content, UUID userId) {
         return "";
     }
@@ -174,7 +172,6 @@ public class FunctionHelper {
             return GSON.fromJson(response.toString(), new TypeToken<List<Map<String, ?>>>(){}.getType());
         }
     }
-
     public boolean checkPermissionHrm(UUID idManager, UUID idUser) {
         if(idManager.equals(idUser)) return true;
         String jsonBody = "{\"user_member\": \"" + idUser + "\",\"user_manager\": \"" + idManager + "\"}";

@@ -273,7 +273,6 @@ public class HrmsV3 implements HrmsProvider{
                     name
                     id_employee
                     is_active
-                    is_partner
                     start_date
                     end_date
                     positions {

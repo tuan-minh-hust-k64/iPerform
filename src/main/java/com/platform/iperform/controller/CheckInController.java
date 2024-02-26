@@ -64,7 +64,7 @@ public class CheckInController {
         try {
 //            Map<String, Object> managers = functionHelper.getManagerInfo(userId);
             Map<String, Object> managers = hrmsProvider.getManagerInfo(userId);
-            log.info("Manager info:: " + managers.toString());
+
             String fromName = (String) managers.get("name");
             String fromEmail = (String) managers.get("email");
             Properties props = new Properties();
@@ -81,7 +81,6 @@ public class CheckInController {
                     });
             List<Map<String, String>> managerInfo= (List<Map<String, String>>) managers.get("managers");
 
-            log.info(managerInfo.toString());
             for (Map<String, String> item : managerInfo) {
                 slackService.sendMessageDM(
                         item.get("email"),

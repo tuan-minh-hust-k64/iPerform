@@ -16,6 +16,8 @@ public class HrmsUser extends BaseHrmsModel{
     private String idEmployee;
     @JsonProperty("is_active")
     private Boolean isActive;
+    @JsonProperty("is_partner")
+    private Boolean isPartner;
     @JsonProperty("start_date")
     private String startDate;
     @JsonProperty("end_date")

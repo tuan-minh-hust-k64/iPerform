@@ -94,8 +94,6 @@ public class AuthController {
     }
     @GetMapping(value = "/mobile_attribution")
     public ResponseEntity<String> fakeAuthGG(HttpServletRequest request) {
-//       mailService.sendEmail();
-        log.info(request.getQueryString());
         return ResponseEntity
                 .ok()
 //                .headers(responseHeaders)

@@ -15,5 +15,6 @@ public interface HrmsProvider {
     List<HrmsAccess> authorizationHrm(AuthRequest authRequest) throws Exception;
     Map<String, Object> getManagerInfo(String userId) throws Exception;
     List<HrmsUser> getTeamByManagerId(String userId) throws Exception;
-    boolean checkPermissionHrm(UUID idManager, UUID idUser) throws Exception;
+    boolean checkPermissionHrm(UUID idManager, UUID idUser);
+    List<HrmsUser> getAllUsers() throws Exception;
 }

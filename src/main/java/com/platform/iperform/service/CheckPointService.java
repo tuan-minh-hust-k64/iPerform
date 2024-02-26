@@ -9,6 +9,8 @@ import com.platform.iperform.dataaccess.checkpoint.adapter.CheckPointItemReposit
 import com.platform.iperform.dataaccess.checkpoint.adapter.CheckPointRepositoryImpl;
 import com.platform.iperform.dataaccess.checkpoint.entity.CheckPointEntity;
 import com.platform.iperform.dataaccess.checkpoint.mapper.CheckPointDataAccessMapper;
+import com.platform.iperform.libs.hrms_provider.HrmsProvider;
+import com.platform.iperform.libs.hrms_provider.HrmsV3;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.model.CheckPointItem;
 import lombok.extern.slf4j.Slf4j;
@@ -31,16 +33,20 @@ public class CheckPointService {
     private final CheckPointDataAccessMapper checkPointDataAccessMapper;
     private final FunctionHelper functionHelper;
     private final SlackService slackService;
+    private final HrmsProvider hrmsProvider;
 
     public CheckPointService(CheckPointRepositoryImpl checkPointRepository,
                              CheckPointItemRepositoryImpl checkPointItemRepository,
                              CheckPointDataAccessMapper checkPointDataAccessMapper,
-                             FunctionHelper functionHelper, SlackService slackService) {
+                             FunctionHelper functionHelper, SlackService slackService,
+                             HrmsV3 hrmsV3
+    ) {
         this.checkPointRepository = checkPointRepository;
         this.checkPointItemRepository = checkPointItemRepository;
         this.checkPointDataAccessMapper = checkPointDataAccessMapper;
         this.functionHelper = functionHelper;
         this.slackService = slackService;
+        this.hrmsProvider = hrmsV3;
     }
     @Transactional(readOnly = true)
     public CheckPointResponse getCheckPointByUserId(CheckPointRequest checkPointRequest) {
@@ -84,11 +90,14 @@ public class CheckPointService {
         CheckPointEntity result = checkPointRepository.save(checkPointEntity);
         if(!checkPointStatusBefore.equals(CheckPointStatus.FINISHED) && checkPointEntity.getStatus().equals(CheckPointStatus.FINISHED)) {
             try {
-                Map<String, Object> userInfo = functionHelper.getManagerInfo(userId.toString());
+                // Map<String, Object> userInfo = functionHelper.getManagerInfo(userId.toString());
+                Map<String, Object> userInfo = hrmsProvider.getManagerInfo(userId.toString());
                 slackService.sendMessageDM(userInfo.get("email").toString(), "Manager đã đánh giá xong CheckPoint kì " + checkPointEntity.getTitle() + " của bạn!!!");
             } catch (IOException e) {
                 log.error("ERROR: KHông thể gửi thông báo, lỗi HRM");
                 throw new RuntimeException("ERROR: KHông thể gửi thông báo, lỗi HRM");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
         return CheckPointResponse.builder()

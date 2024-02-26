@@ -51,9 +51,7 @@ public class CheckPointController {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         CheckPointResponse result = checkPointService.findById(id);
 
-        hrmsProvider.checkPermissionHrm(UUID.fromString(userId), result.getData().getUserId());
-
-        if(functionHelper.checkPermissionHrm(UUID.fromString(userId), result.getData().getUserId())) {
+        if(hrmsProvider.checkPermissionHrm(UUID.fromString(userId), result.getData().getUserId())) {
             return ResponseEntity.ok(result);
         } else {
             throw new AuthenticateException("You are not permission!");
@@ -128,7 +126,10 @@ public class CheckPointController {
                 functionHelper.authorizationMiddleware(UUID.fromString(userId), UUID.fromString(userId)));
         if(result.getData().getId() != null) {
             try {
-                Map<String, Object> managers = functionHelper.getManagerInfo(userId);
+//                Map<String, Object> manager2 = functionHelper.getManagerInfo(userId);
+
+                // HRMS V3
+                Map<String, Object> managers = hrmsProvider.getManagerInfo(userId);
                 String fromName = (String) managers.get("name");
                 String fromEmail = (String) managers.get("email");
                 Properties props = new Properties();
@@ -144,6 +145,7 @@ public class CheckPointController {
                             }
                         });
                 List<Map<String, String>> managerInfo= (List<Map<String, String>>) managers.get("managers");
+
                 for (Map<String, String> item : managerInfo) {
                     slackService.sendMessageDM(
                             item.get("email"),
@@ -170,6 +172,8 @@ public class CheckPointController {
                     Transport.send(message);
                 }
             } catch (IOException | MessagingException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

@@ -77,7 +77,7 @@ public class CheckPointController {
                                 }
                                 else return
                                         item.getTitle().equals(timePeriod)
-                                                && item.getCategory().equals(CategoryCheckpoint.valueOf(category));
+                                                && item.getCategory().equals(CategoryCheckpoint.NORMAL);
                             }).toList())
                     .build());
         }
@@ -90,7 +90,7 @@ public class CheckPointController {
                 .userId(UUID.fromString(userId))
                 .title(checkPointRequest.getCheckPoint().getTitle() == null? functionHelper.calculateQuarter() : checkPointRequest.getCheckPoint().getTitle())
                 .build());
-        if(checkExist.getData().getId() != null) {
+        if(checkExist.getData().getId() != null && checkExist.getData().getCategory() == CategoryCheckpoint.NORMAL) {
             throw new RuntimeException("Check point is already exist!!!");
         }
         CheckPointResponse result = checkPointService.createCheckPoint(checkPointRequest);

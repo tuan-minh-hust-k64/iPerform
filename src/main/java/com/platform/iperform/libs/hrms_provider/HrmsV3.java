@@ -3,6 +3,7 @@ package com.platform.iperform.libs.hrms_provider;
 import com.platform.iperform.common.dto.hrms.models.*;
 import com.platform.iperform.common.dto.request.AuthRequest;
 import com.platform.iperform.common.dto.hrms.response.HrmsLoginResponse;
+import com.platform.iperform.common.exception.HrmsException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Primary;
@@ -48,15 +49,19 @@ public class HrmsV3 implements HrmsProvider{
                                   team_id
                                   team_name
                                   position_name
+                                  is_manager
                                 }
                 }""";
 
-        HrmsLoginResponse res = graphQlClient.
-                document(document).
-                variable("idToken", authRequest.getCode()).variable("resource_type", "iPerform").
-                retrieve("googleAuth").toEntity(HrmsLoginResponse.class).block();
+        try {
 
-        return res;
+            return graphQlClient.
+                    document(document).
+                    variable("idToken", authRequest.getCode()).variable("resource_type", "iPerform").
+                    retrieve("googleAuth").toEntity(HrmsLoginResponse.class).block();
+        } catch (Exception exception) {
+            throw new HrmsException("Error login: " + exception.getMessage());
+        }
     }
 
     @Override
@@ -81,16 +86,19 @@ public class HrmsV3 implements HrmsProvider{
                     }
                   }
                 """;
-        HrmsUser user = graphQlClient
-                .document(document)
-                .variable("id", authRequest.getUserId())
-                .retrieve("getUserById")
-                .toEntity(HrmsUser.class)
-                .block();
+        try {
+            HrmsUser user = graphQlClient
+                    .document(document)
+                    .variable("id", authRequest.getUserId())
+                    .retrieve("getUserById")
+                    .toEntity(HrmsUser.class)
+                    .block();
 
-        List<HrmsAccess> access = getHrmsAccesses(user);
-
-        return access;
+            assert user != null;
+            return getHrmsAccesses(user);
+        } catch (Exception exception) {
+            throw new HrmsException("Error user: " + exception.getMessage());
+        }
     }
 
     @NotNull
@@ -186,14 +194,19 @@ public class HrmsV3 implements HrmsProvider{
         Set<HrmsTeam> listTeams = new HashSet<>();
 
         teamIds.forEach(id -> {
-            List<HrmsTeam> teams = graphQlClient.
-                    document(documentTeams).
-                    variable("team_id", id).
-                    retrieve("getAllChildTeams").toEntityList(HrmsTeam.class).block();
+            try {
+                List<HrmsTeam> teams = graphQlClient.
+                        document(documentTeams).
+                        variable("team_id", id).
+                        retrieve("getAllChildTeams").toEntityList(HrmsTeam.class).block();
 
-            if (teams != null) {
-                listTeams.addAll(teams);
-            };
+                if (teams != null) {
+                    listTeams.addAll(teams);
+                }
+                ;
+            } catch (Exception exception) {
+                throw new HrmsException("Error get teams: " + exception.getMessage());
+            }
         });
 
         Set<HrmsUser> usersSet = new HashSet<>();
@@ -238,60 +251,67 @@ public class HrmsV3 implements HrmsProvider{
                 """;
 
         // Get all parent team of user's team
-        List<HrmsTeam> teams = new ArrayList<>(Objects.requireNonNull(graphQlClient
-                .document(document)
-                .variable("team_id", user.getTeams().getId())
-                .retrieve("getAllParentTeams")
-                .toEntityList(HrmsTeam.class)
-                .block()));
+        try {
+            List<HrmsTeam> teams = new ArrayList<>(Objects.requireNonNull(graphQlClient
+                    .document(document)
+                    .variable("team_id", user.getTeams().getId())
+                    .retrieve("getAllParentTeams")
+                    .toEntityList(HrmsTeam.class)
+                    .block()));
 
-        // Add user's team
-        teams.add(user.getTeams());
-        AtomicReference<Boolean> isManager = new AtomicReference<>(false);
+            // Add user's team
+            teams.add(user.getTeams());
+            AtomicReference<Boolean> isManager = new AtomicReference<>(false);
 
-        for (HrmsTeam team : teams) {
-            for (HrmsManagerTeams managerTeam : team.getManagerTeams()) {
-                if (managerTeam.getId() != null && managerTeam.getUsers().getId().equals(idManager.toString())) {
-                    isManager.set(true);
-                    break;
+            for (HrmsTeam team : teams) {
+                for (HrmsManagerTeams managerTeam : team.getManagerTeams()) {
+                    if (managerTeam.getId() != null && managerTeam.getUsers().getId().equals(idManager.toString())) {
+                        isManager.set(true);
+                        break;
+                    }
                 }
             }
+            return isManager.get();
+        } catch (Exception exception) {
+            throw new HrmsException("Error get teams: " + exception.getMessage());
         }
-        return isManager.get();
     }
 
     @Override
     public List<HrmsUser> getAllUsers() throws Exception {
-        String document = """
-                query getAllUsers {
-                  getAllUsers {
-                    id
-                    created_at
-                    updated_at
-                    email
-                    avatar
-                    name
-                    id_employee
-                    is_active
-                    start_date
-                    end_date
-                    positions {
-                      name
-                      id
+        try {
+            String document = """
+                    query getAllUsers {
+                      getAllUsers {
+                        id
+                        created_at
+                        updated_at
+                        email
+                        avatar
+                        name
+                        id_employee
+                        is_active
+                        start_date
+                        end_date
+                        positions {
+                          name
+                          id
+                        }
+                        role_projects {
+                          name
+                          id
+                        }
+                      }
                     }
-                    role_projects {
-                      name
-                      id
-                    }
-                  }
-                }
-                """;
-
-        return graphQlClient
-                .document(document)
-                .retrieve("getAllUsers")
-                .toEntityList(HrmsUser.class)
-                .block();
+                    """;
+            return graphQlClient
+                    .document(document)
+                    .retrieve("getAllUsers")
+                    .toEntityList(HrmsUser.class)
+                    .block();
+        } catch (Exception exception) {
+            throw new HrmsException("Error get all user" + exception.getMessage());
+        }
     }
 
     private HrmsUser getUserById(String userId) {
@@ -326,10 +346,13 @@ public class HrmsV3 implements HrmsProvider{
                   }
                 """;
 
-        HrmsUser res = graphQlClient.
-                document(document).
-                variable("id", userId).
-                retrieve("getUserById").toEntity(HrmsUser.class).block();
-        return res;
+        try {
+            return graphQlClient.
+                    document(document).
+                    variable("id", userId).
+                    retrieve("getUserById").toEntity(HrmsUser.class).block();
+        } catch (Exception exception) {
+            throw new HrmsException("Error get user width id " +userId + " :" + exception.getMessage());
+        }
     }
 }

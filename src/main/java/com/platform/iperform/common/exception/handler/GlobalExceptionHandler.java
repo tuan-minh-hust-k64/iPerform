@@ -3,6 +3,7 @@ package com.platform.iperform.common.exception.handler;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.exception.ErrorCommon;
+import com.platform.iperform.common.exception.HrmsException;
 import com.platform.iperform.common.exception.NotFoundException;
 import graphql.GraphQLException;
 import lombok.extern.slf4j.Slf4j;
@@ -68,10 +69,10 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(value = {GraphQLException.class, GraphQlClientException.class, GraphQlTransportException.class})
+    @ExceptionHandler(value = {GraphQLException.class, GraphQlClientException.class, GraphQlTransportException.class, HrmsException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorCommon handleGraphQLException(Exception e) {
-        log.error("GraphQL exception::" + e.getMessage() + e);
+        log.error("HRMS exception::" + e.getMessage() + e);
         return ErrorCommon.builder()
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .message(e.getMessage())

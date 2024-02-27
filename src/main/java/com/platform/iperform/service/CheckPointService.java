@@ -55,9 +55,10 @@ public class CheckPointService {
                 .checkPoint(result)
                 .build();
     }
+
     @Transactional(readOnly = true)
     public CheckPointResponse findByUserIdAndTitle(CheckPointRequest checkPointRequest) {
-        CheckPoint result = checkPointRepository.findByUserIdAndTitle(checkPointRequest.getUserId(), checkPointRequest.getTitle());
+        CheckPoint result = checkPointRepository.findByTitleAndUserIdAndCategory(checkPointRequest.getUserId(), checkPointRequest.getTitle(), checkPointRequest.getCategory());
         return CheckPointResponse.builder()
                 .data(result)
                 .build();

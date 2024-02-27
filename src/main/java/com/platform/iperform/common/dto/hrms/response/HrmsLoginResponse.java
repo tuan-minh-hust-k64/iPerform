@@ -17,4 +17,5 @@ public class HrmsLoginResponse {
     private String team_name;
     private String token;
     private String position_name;
+    private Boolean is_manager;
 }

@@ -8,6 +8,7 @@ import com.platform.iperform.common.dto.response.CheckPointResponse;
 import com.platform.iperform.common.dto.response.CollaborationFeedbackResponse;
 import com.platform.iperform.common.dto.response.EksResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.common.valueobject.CategoryCheckpoint;
 import com.platform.iperform.common.valueobject.CheckInStatus;
 import com.platform.iperform.common.valueobject.FeedbackStatus;
 import com.platform.iperform.libs.hrms_provider.HrmsProvider;
@@ -54,7 +55,10 @@ public class StatisticController {
     }
 
     @GetMapping(value = "/my-team")
-    public ResponseEntity<?> statisticMyTeam(@RequestParam String managerId, @RequestParam String title, @RequestParam(required = false) String category) {
+    public ResponseEntity<?> statisticMyTeam(
+            @RequestParam String managerId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String category) {
         try {
 //            List<Map<String, Object>> result = functionHelper.getTeamByManagerId(managerId);
             List<HrmsUser> listUser = hrmsProvider.getTeamByManagerId(managerId);
@@ -87,10 +91,15 @@ public class StatisticController {
                         break;
                     }
                 }
-                CheckPointResponse statisticCheckPoint = checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
-                        .userId(UUID.fromString(item.getId().toString()))
-                                .title(title)
-                        .build());
+                CheckPointResponse statisticCheckPoint = checkPointService
+                        .findByUserIdAndTitle(
+                            CheckPointRequest
+                                    .builder()
+                                    .userId(UUID.fromString(item.getId()))
+                                    .title(title)
+                                    .category(category)
+                                    .build()
+                         );
                 CollaborationFeedbackResponse statisticFeedback = collaborationFeedbackService.getCollaborationByTargetIdAndTimePeriod(UUID.fromString(user.get("id").toString()), title, FeedbackStatus.INIT);
                 user.put("checkPointStatus", statisticCheckPoint.getData().getStatus());
                 user.put("checkPointId", statisticCheckPoint.getData().getId());
@@ -110,15 +119,18 @@ public class StatisticController {
         }
     }
     @GetMapping(value = "/check-point")
-    ResponseEntity<?> statisticCheckPoint(@RequestParam(required = false) String timePeriod) {
+    ResponseEntity<?> statisticCheckPoint(@RequestParam(required = false) String timePeriod, @RequestParam(required = false) String category) {
         try {
 //            List<Map<String, Object>> result = functionHelper.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
             List<HrmsUser> result = hrmsProvider.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
             List<Map<String, Object>> data = result.stream().map(user -> {
-                CheckPointResponse statisticCheckPoint = checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
+                CheckPointResponse statisticCheckPoint =
+                        checkPointService.findByUserIdAndTitle(CheckPointRequest.builder()
                         .userId(UUID.fromString(user.getId()))
-                        .title(timePeriod == null ? functionHelper.calculateQuarter():timePeriod)
+                        .title(timePeriod)
+                        .category(category)
                         .build());
+
                 List<?> statisticFeedback = collaborationFeedbackService.getCollaborationByReviewerIdAndTimePeriod(
                         UUID.fromString(user.getId()),
                         timePeriod == null ? functionHelper.calculateQuarter() : timePeriod,
@@ -188,9 +200,10 @@ public class StatisticController {
 //            result = functionHelper.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
             List<HrmsUser> result = hrmsProvider.getTeamByManagerId("2c7008db-1f20-4fbb-8d77-325431277220");
             List<Map<String, Object>> data = result.stream().map(user -> {
-                EksResponse statisticEks = eksService.getEksByUserId(UUID.fromString(user.getId()),
-                        category == null ? null : timePeriod == null ? functionHelper.calculateQuarter() : timePeriod,
-                        category) ;
+                EksResponse statisticEks = eksService.getEksByUserId(
+                        UUID.fromString(user.getId()),
+                        timePeriod,
+                        category == null ? CategoryCheckpoint.NORMAL.toString() : category) ;
 //                Map<String, Object> tempRep = (Map<String, Object>) user.getTeams();
                 HrmsTeam tempRep =  user.getTeams();
                 Map<String, Object> temp = new HashMap<>();

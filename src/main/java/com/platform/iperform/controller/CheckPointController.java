@@ -56,7 +56,6 @@ public class CheckPointController {
         } else {
             throw new AuthenticateException("You are not permission!");
         }
-
     }
     @GetMapping
     public ResponseEntity<CheckPointResponse> getCheckPointByUserId(

@@ -72,13 +72,12 @@ public class CheckPointController {
         } else {
             return ResponseEntity.ok(CheckPointResponse.builder()
                             .checkPoint(result.getCheckPoint().stream().filter(item -> {
-                                if (item.getTitle() == null) {
-                                    if (category != null) {
-                                        return item.getCategory().equals(CategoryCheckpoint.valueOf(category));
-                                    }
-                                    return false;
+                                if (category.equals(CategoryCheckpoint.ONBOARDING.toString())) {
+                                    return item.getCategory().equals(CategoryCheckpoint.ONBOARDING);
                                 }
-                                else return item.getTitle().equals(timePeriod);
+                                else return
+                                        item.getTitle().equals(timePeriod)
+                                                && item.getCategory().equals(CategoryCheckpoint.valueOf(category));
                             }).toList())
                     .build());
         }

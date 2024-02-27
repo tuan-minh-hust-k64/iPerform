@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/api/statistic")
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 @Slf4j
 public class StatisticController {
     private final FunctionHelper functionHelper;

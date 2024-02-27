@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping(value = "/api/config")
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
 
 public class ConfigController {

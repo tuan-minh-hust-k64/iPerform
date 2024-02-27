@@ -17,7 +17,6 @@ import java.util.UUID;
 @RestController
 @Slf4j
 @RequestMapping(value = "/api/eks")
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
 public class EksController {
     private final EksService eksService;

@@ -26,7 +26,6 @@ import java.util.List;
 
 @Controller
 @RequestMapping(value = "/api/auth")
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 @Slf4j
 public class AuthController {
     private final FunctionHelper functionHelper;

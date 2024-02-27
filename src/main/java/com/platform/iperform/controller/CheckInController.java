@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Properties;
 
 @Controller
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 @Slf4j
 @RequestMapping(value = "/api/check-in")
 public class CheckInController {

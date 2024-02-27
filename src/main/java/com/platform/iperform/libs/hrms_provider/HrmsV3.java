@@ -22,8 +22,8 @@ public class HrmsV3 implements HrmsProvider{
 
     public HrmsV3() {
         WebClient client = WebClient.builder()
-//                .baseUrl("https://users.ikameglobal.com/graphql")
-                .baseUrl("http://10.10.11.34:5003/graphql")
+                .baseUrl("https://users.ikameglobal.com/graphql")
+//                .baseUrl("http://10.10.11.34:5003/graphql")
                 .defaultHeader("apikey", "a61aiz8dscq480lqgi5f1t5stmas54")
                 .defaultHeader("passport", "quyennv@2024")
                 .build();

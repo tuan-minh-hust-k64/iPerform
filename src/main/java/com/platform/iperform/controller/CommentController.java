@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/api/comment")
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 
 
 public class CommentController {

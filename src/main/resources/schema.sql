@@ -100,6 +100,7 @@ CREATE TABLE "iperform".check_point_item
     check_point_id uuid NOT NULL,
     CONSTRAINT check_point_item_key PRIMARY KEY (id)
 );
+ALTER TABLE "iperform".check_point_item ADD COLUMN description character varying COLLATE pg_catalog."default";
 
 
 CREATE TABLE "iperform".check_in

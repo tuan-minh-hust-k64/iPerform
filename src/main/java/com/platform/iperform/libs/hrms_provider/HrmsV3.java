@@ -50,6 +50,7 @@ public class HrmsV3 implements HrmsProvider{
                                   team_name
                                   position_name
                                   is_manager
+                                  start_date
                                 }
                 }""";
 

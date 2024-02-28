@@ -93,7 +93,7 @@ public class CommentService {
 //                Map<String, Object> userInfo = functionHelper.getManagerInfo(commentRequest.getNotifTo().toString());
                 Map<String, Object> userInfo = hrmsProvider.getManagerInfo(commentRequest.getNotifTo().toString());
                 slackService.sendMessageDM(userInfo.get("email").toString(),
-                        "[iPerform] Bạn nhận được comment mới từ " + userInfo.get("name") + " trên iPerform\n" +
+                        "[iPerform] Bạn nhận được comment mới từ manager trên iPerform\n" +
                                 "Click ngay vào <https://iperform.ikameglobal.com/#/check-in|*ĐÂY*> để đọc comment nhé!\n" +
                                 "Vui lòng liên hệ đội ngũ phát triển iPerform nếu không truy cập được link trên!");
             }

@@ -1,5 +1,6 @@
 package com.platform.iperform.common.dto.hrms.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.platform.iperform.common.dto.hrms.models.HrmsAccess;
 import lombok.Data;
 
@@ -7,16 +8,25 @@ import java.util.List;
 
 @Data
 public class HrmsLoginResponse {
-    private String user_id;
+    @JsonProperty("user_id")
+    private String userId;
     private List<HrmsAccess> access;
-    private Long issued_at;
+    @JsonProperty("issued_at")
+    private Long issuedAt;
     private String username;
-    private String useremail;
-    private String userpfp;
-    private String team_id;
-    private String team_name;
+    @JsonProperty("useremail")
+    private String userEmail;
+    @JsonProperty("userpfp")
+    private String userPfp;
+    @JsonProperty("team_id")
+    private String teamId;
+    @JsonProperty("team_name")
+    private String teamName;
     private String token;
-    private String position_name;
-    private Boolean is_manager;
-    private String start_date;
+    @JsonProperty("position_name")
+    private String positionName;
+    @JsonProperty("is_manager")
+    private Boolean isManager;
+    @JsonProperty("start_date")
+    private String startDate;
 }

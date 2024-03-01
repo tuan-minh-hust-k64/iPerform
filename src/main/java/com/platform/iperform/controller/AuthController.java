@@ -53,7 +53,7 @@ public class AuthController {
 //        Map<String, Object> authenHrm = functionHelper.authenticateHrm(authRequest);
         HrmsLoginResponse authenHrm = hrmsProvider.authenticateHrm(authRequest);
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(authenHrm.getUser_id(), authenHrm.getUser_id()));
+                .authenticate(new UsernamePasswordAuthenticationToken(authenHrm.getUserId(), authenHrm.getUserId()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);

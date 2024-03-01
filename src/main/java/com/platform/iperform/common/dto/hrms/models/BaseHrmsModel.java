@@ -1,10 +1,13 @@
 package com.platform.iperform.common.dto.hrms.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class BaseHrmsModel {
     private String id;
-    private String created_at;
-    private String updated_at;
+    @JsonProperty("created_at")
+    private String createdAt;
+    @JsonProperty("updated_at")
+    private String updatedAt;
 }

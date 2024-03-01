@@ -1,8 +1,6 @@
 package com.platform.iperform.common.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -19,6 +17,7 @@ public class AuthResponse {
     private final String team_name;
     private final String company_id;
     private final String company_name;
+
 
     @Override
     public String toString() {

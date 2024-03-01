@@ -1,7 +1,10 @@
 package com.platform.iperform.security.services;
 
+import com.platform.iperform.common.dto.hrms.models.HrmsAccess;
 import com.platform.iperform.common.dto.request.AuthRequest;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.libs.hrms_provider.HrmsProvider;
+import com.platform.iperform.libs.hrms_provider.HrmsV3;
 import com.platform.iperform.model.Permission;
 import com.platform.iperform.model.User;
 import lombok.extern.slf4j.Slf4j;
@@ -19,30 +22,39 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
-  private final FunctionHelper functionHelper;
+  private final HrmsProvider hrmsProvider;
 
-  public UserDetailsServiceImpl(FunctionHelper functionHelper) {
-    this.functionHelper = functionHelper;
+  public UserDetailsServiceImpl(HrmsV3 hrmsProvider) {
+
+    this.hrmsProvider = hrmsProvider;
   }
 
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     try {
-      List<Permission> permission = functionHelper.authorizationHrm(AuthRequest.builder()
+//      List<Permission> permission = functionHelper.authorizationHrm(AuthRequest.builder()
+//                      .userId(username)
+//                      .resourceType("iPerform")
+//              .build());
+
+      List<HrmsAccess> accessList = hrmsProvider.authorizationHrm(
+              AuthRequest
+                      .builder()
                       .userId(username)
                       .resourceType("iPerform")
-              .build());
+                      .build());
+
       User user = User.builder()
               .id(UUID.randomUUID())
               .username(username)
-              .roles(permission.stream().map(item -> "ROLE_" + item.permission().toUpperCase()).distinct().toList())
+              .roles(accessList.stream().map(item -> "ROLE_" + item.getPermission().toUpperCase()).distinct().toList())
               .password(new BCryptPasswordEncoder().encode(username))
               .build();
 
       return UserDetailsImpl.build(user);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
     }
   }
 

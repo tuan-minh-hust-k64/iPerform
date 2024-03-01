@@ -6,6 +6,8 @@ import com.platform.iperform.common.exception.AuthenticateException;
 import com.platform.iperform.common.utils.FunctionHelper;
 import com.platform.iperform.common.valueobject.CategoryCheckpoint;
 import com.platform.iperform.common.valueobject.CheckPointStatus;
+import com.platform.iperform.libs.hrms_provider.HrmsProvider;
+import com.platform.iperform.libs.hrms_provider.HrmsV3;
 import com.platform.iperform.model.CheckPoint;
 import com.platform.iperform.service.CheckPointService;
 import com.platform.iperform.service.SlackService;
@@ -25,31 +27,34 @@ import java.util.Properties;
 import java.util.UUID;
 
 @Controller
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
 @Slf4j
 @RequestMapping(value = "/api/check-point")
 public class CheckPointController {
     private final CheckPointService checkPointService;
     private final FunctionHelper functionHelper;
     private final SlackService slackService;
+    private final HrmsProvider hrmsProvider;
 
     public CheckPointController(CheckPointService checkPointService,
                                 FunctionHelper functionHelper,
-                                SlackService slackService) {
+                                SlackService slackService,
+                                HrmsV3 hrmsProvider
+    ) {
         this.checkPointService = checkPointService;
         this.functionHelper = functionHelper;
         this.slackService = slackService;
+        this.hrmsProvider = hrmsProvider;
     }
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CheckPointResponse> getCheckPointByIdAndUserId(@PathVariable UUID id) {
+    public ResponseEntity<CheckPointResponse> getCheckPointByIdAndUserId(@PathVariable UUID id) throws Exception {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         CheckPointResponse result = checkPointService.findById(id);
-        if(functionHelper.checkPermissionHrm(UUID.fromString(userId), result.getData().getUserId())) {
+
+        if(hrmsProvider.checkPermissionHrm(UUID.fromString(userId), result.getData().getUserId())) {
             return ResponseEntity.ok(result);
         } else {
             throw new AuthenticateException("You are not permission!");
         }
-
     }
     @GetMapping
     public ResponseEntity<CheckPointResponse> getCheckPointByUserId(
@@ -72,13 +77,12 @@ public class CheckPointController {
         } else {
             return ResponseEntity.ok(CheckPointResponse.builder()
                             .checkPoint(result.getCheckPoint().stream().filter(item -> {
-                                if (item.getTitle() == null) {
-                                    if (category != null) {
-                                        return item.getCategory().equals(CategoryCheckpoint.valueOf(category));
-                                    }
-                                    return false;
+                                if (category.equals(CategoryCheckpoint.ONBOARDING.toString())) {
+                                    return item.getCategory().equals(CategoryCheckpoint.ONBOARDING);
                                 }
-                                else return item.getTitle().equals(timePeriod);
+                                else return
+                                        item.getTitle().equals(timePeriod)
+                                                && item.getCategory().equals(CategoryCheckpoint.NORMAL);
                             }).toList())
                     .build());
         }
@@ -91,7 +95,7 @@ public class CheckPointController {
                 .userId(UUID.fromString(userId))
                 .title(checkPointRequest.getCheckPoint().getTitle() == null? functionHelper.calculateQuarter() : checkPointRequest.getCheckPoint().getTitle())
                 .build());
-        if(checkExist.getData().getId() != null) {
+        if(checkExist.getData().getId() != null && checkExist.getData().getCategory() == CategoryCheckpoint.NORMAL) {
             throw new RuntimeException("Check point is already exist!!!");
         }
         CheckPointResponse result = checkPointService.createCheckPoint(checkPointRequest);
@@ -119,7 +123,10 @@ public class CheckPointController {
                 functionHelper.authorizationMiddleware(UUID.fromString(userId), UUID.fromString(userId)));
         if(result.getData().getId() != null) {
             try {
-                Map<String, Object> managers = functionHelper.getManagerInfo(userId);
+//                Map<String, Object> manager2 = functionHelper.getManagerInfo(userId);
+
+                // HRMS V3
+                Map<String, Object> managers = hrmsProvider.getManagerInfo(userId);
                 String fromName = (String) managers.get("name");
                 String fromEmail = (String) managers.get("email");
                 Properties props = new Properties();
@@ -135,6 +142,7 @@ public class CheckPointController {
                             }
                         });
                 List<Map<String, String>> managerInfo= (List<Map<String, String>>) managers.get("managers");
+
                 for (Map<String, String> item : managerInfo) {
                     slackService.sendMessageDM(
                             item.get("email"),
@@ -161,6 +169,8 @@ public class CheckPointController {
                     Transport.send(message);
                 }
             } catch (IOException | MessagingException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

@@ -34,7 +34,7 @@ public class EksRepositoryImpl {
     }
     public List<Eks> saveAll(List<Eks> eks) {
         List<EksEntity> result = eksJpaRepository.saveAll(eks.stream().map(eksDataAccessMapper::eksToEksEntity).toList());
-        log.info("EKS: " + result.get(0).toString());
+
         return result.stream().map(eksDataAccessMapper::eksEntityToEks).toList();
     }
     public EksEntity save(EksEntity eksEntity) {

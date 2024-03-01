@@ -15,4 +15,5 @@ public class CheckPointRequest {
     private final UUID userId;
     private final String receiver;
     private final String title;
+    private final String category;
 }

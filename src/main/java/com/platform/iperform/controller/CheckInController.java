@@ -3,12 +3,15 @@ package com.platform.iperform.controller;
 import com.platform.iperform.common.dto.request.CheckInRequest;
 import com.platform.iperform.common.dto.response.CheckInResponse;
 import com.platform.iperform.common.utils.FunctionHelper;
+import com.platform.iperform.libs.hrms_provider.HrmsProvider;
+import com.platform.iperform.libs.hrms_provider.HrmsV3;
 import com.platform.iperform.service.CheckInService;
 import com.platform.iperform.service.EksService;
 import com.platform.iperform.service.SlackService;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,24 +24,26 @@ import java.util.Map;
 import java.util.Properties;
 
 @Controller
-@CrossOrigin(origins = {"http://localhost:3000", "https://iperform.ikameglobal.com"}, allowCredentials = "true")
-
+@Slf4j
 @RequestMapping(value = "/api/check-in")
 public class CheckInController {
     private final SlackService slackService;
     private final CheckInService checkInService;
     private final EksService eksService;
     private final FunctionHelper functionHelper;
+    private final HrmsProvider hrmsProvider;
 
     public CheckInController(JavaMailSender mailSender,
                              SlackService slackService,
                              CheckInService checkInService,
                              EksService eksService,
-                             FunctionHelper functionHelper) {
+                             FunctionHelper functionHelper,
+                             HrmsV3 hrmsProvider) {
         this.slackService = slackService;
         this.checkInService = checkInService;
         this.eksService = eksService;
         this.functionHelper = functionHelper;
+        this.hrmsProvider = hrmsProvider;
     }
     @PostMapping
     public ResponseEntity<CheckInResponse> createCheckIn(@RequestBody CheckInRequest checkInRequest) {
@@ -56,7 +61,9 @@ public class CheckInController {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         try {
-            Map<String, Object> managers = functionHelper.getManagerInfo(userId);
+//            Map<String, Object> managers = functionHelper.getManagerInfo(userId);
+            Map<String, Object> managers = hrmsProvider.getManagerInfo(userId);
+
             String fromName = (String) managers.get("name");
             String fromEmail = (String) managers.get("email");
             Properties props = new Properties();
@@ -72,6 +79,7 @@ public class CheckInController {
                         }
                     });
             List<Map<String, String>> managerInfo= (List<Map<String, String>>) managers.get("managers");
+
             for (Map<String, String> item : managerInfo) {
                 slackService.sendMessageDM(
                         item.get("email"),
@@ -98,6 +106,8 @@ public class CheckInController {
                 Transport.send(message);
             }
         } catch (IOException | MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

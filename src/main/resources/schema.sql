@@ -57,8 +57,8 @@ CREATE TABLE "iperform".expectation
     ordinal_number numeric(10, 2),
     CONSTRAINT expectation_key PRIMARY KEY (id)
 );
-alter table "iperform".iperform.expectation add column
-    category_eks category not null default 'NORMAL';
+alter table "iperform".expectation add column
+    category category_eks not null default 'NORMAL';
 
 
 CREATE TABLE "iperform".key_step
@@ -85,8 +85,8 @@ CREATE TABLE "iperform".check_point
     ranking ranking_type,
     CONSTRAINT check_point_key PRIMARY KEY (id)
 );
-alter table "iperform".iperform.check_point add column
-    category_checkpoint category not null default 'NORMAL';
+alter table "iperform".check_point add column
+    category category_checkpoint not null default 'NORMAL';
 
 
 CREATE TABLE "iperform".check_point_item
@@ -100,6 +100,7 @@ CREATE TABLE "iperform".check_point_item
     check_point_id uuid NOT NULL,
     CONSTRAINT check_point_item_key PRIMARY KEY (id)
 );
+ALTER TABLE "iperform".check_point_item ADD COLUMN description character varying COLLATE pg_catalog."default";
 
 
 CREATE TABLE "iperform".check_in

@@ -77,7 +77,7 @@ public class CheckPointRepositoryImpl {
     }
 
     public CheckPoint findByTitleAndUserIdAndCategory(UUID userId, String title, String category) {
-        String categoryFilter = category;
+        String categoryFilter = category; 
         if (category == null) {
             categoryFilter = CategoryCheckpoint.NORMAL.toString();
         }

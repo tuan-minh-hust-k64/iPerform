@@ -123,9 +123,6 @@ public class CheckPointController {
                 functionHelper.authorizationMiddleware(UUID.fromString(userId), UUID.fromString(userId)));
         if(result.getData().getId() != null) {
             try {
-//                Map<String, Object> manager2 = functionHelper.getManagerInfo(userId);
-
-                // HRMS V3
                 Map<String, Object> managers = hrmsProvider.getManagerInfo(userId);
                 String fromName = (String) managers.get("name");
                 String fromEmail = (String) managers.get("email");

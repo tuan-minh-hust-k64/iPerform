@@ -1,0 +1,34 @@
+server:
+  port: 8184
+
+spring:
+  jpa:
+    open-in-view: false
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=iperform&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: postgres
+    password: 1412
+    driver-class-name: org.postgresql.Driver
+    platform: postgres
+    schema: classpath:schema.sql
+    initialization-mode: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: especiallygamesbdd@gmail.com
+    password: wiwvcqsubgnrzrwe
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+slack-config:
+  user-oauth-token: xoxp-4127893326450-5988206214897-6674559793251-c476a869ab6a7aca8054f81047ae45cd
+  bot-user-oauth-token: xoxb-4127893326450-6417062971715-sdmysqvu7GiadnL2EeqVfKSk
